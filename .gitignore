@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.cache/
+src-tauri/target/
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/**/build/
+src-tauri/gen/android/local.properties
+*.log
+*.tsbuildinfo

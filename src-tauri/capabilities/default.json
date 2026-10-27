@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Main recorder window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    { "identifier": "opener:allow-open-path", "allow": [{ "path": "$APPDATA/media" }, { "path": "$APPDATA/media/**" }] }
+  ]
+}

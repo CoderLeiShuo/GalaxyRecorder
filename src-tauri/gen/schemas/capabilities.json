@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Main recorder window","local":true,"windows":["main"],"permissions":["core:default",{"identifier":"opener:allow-open-path","allow":[{"path":"$APPDATA/media"},{"path":"$APPDATA/media/**"}]}]}}

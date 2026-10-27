@@ -1,0 +1,76 @@
+const {chromium}=require('C:/Users/CoderLeiShuo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('fs');
+
+(async()=>{
+  const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+  const page=await browser.newPage({viewport:{width:1440,height:1000}});
+  const errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  await page.goto('http://127.0.0.1:1420');
+  await page.setViewportSize({width:393,height:852});
+  await page.locator('.tech-product-image img').waitFor();
+  await page.waitForFunction(()=>[...document.images].every(image=>image.complete&&image.naturalWidth>0));
+  await page.screenshot({path:'analysis/mobile-home.png',fullPage:true});
+  await page.setViewportSize({width:1440,height:1000});
+  await page.getByRole('button',{name:'不在车旁？先体验演示'}).click();
+  const cards=page.locator('.video-card');
+  if(await cards.count()!==8)throw Error('Demo library missing');
+  await page.getByRole('button',{name:'紧急录像',exact:true}).click();
+  if(await cards.count()!==2)throw Error('Emergency filter failed');
+  await page.getByRole('button',{name:'普通录像',exact:true}).click();
+  if(await cards.count()!==6)throw Error('Normal filter failed');
+  await page.getByRole('button',{name:'全部录像',exact:true}).click();
+  await page.getByRole('button',{name:'批量选择',exact:true}).click();
+  await page.getByRole('button',{name:'选择 08:26:40 的录像',exact:true}).click();
+  await page.getByRole('button',{name:'选择 08:23:40 的录像',exact:true}).click();
+  await page.getByRole('button',{name:'保存到媒体库',exact:true}).click();
+  await page.locator('nav').getByRole('button',{name:/传输/}).click();
+  const second=page.locator('.transfer-card').filter({hasText:'08:23:40'});
+  await second.getByRole('button',{name:'取消',exact:true}).click();
+  await second.getByText('已取消 · 演示',{exact:true}).waitFor();
+  await page.locator('.transfer-card').filter({hasText:'08:26:40'}).getByText('已保存 · 演示',{exact:true}).waitFor();
+  await second.getByRole('button',{name:'重试',exact:true}).click();
+  await second.getByText('已保存 · 演示',{exact:true}).waitFor();
+  await page.locator('nav').getByRole('button',{name:/行车录像/}).click();
+  await page.locator('.filter-tabs').getByRole('button',{name:/^已保存/}).click();
+  if(await cards.count()!==2)throw Error('Saved library is inconsistent with completed transfers');
+  await page.getByRole('button',{name:'查看 08:26:40 的录像',exact:true}).click();
+  await page.getByRole('dialog',{name:'录像详情'}).waitFor();
+  if(await page.locator('video').count()!==0)throw Error('Demo must never play fake paths');
+  await page.getByRole('button',{name:'返回录像'}).click();
+  await page.getByRole('button',{name:'全部录像',exact:true}).click();
+  await page.getByRole('textbox',{name:'搜索录像'}).fill('not-a-video');
+  await page.getByRole('heading',{name:'没有符合条件的录像'}).waitFor();
+  await page.getByRole('button',{name:'清除筛选条件'}).click();
+  await page.getByLabel('按日期筛选').fill('2026-10-26');
+  if(await cards.count()!==0)throw Error('Date filter failed');
+  await page.getByRole('button',{name:'清除日期'}).click();
+  await page.screenshot({path:'analysis/desktop-preview.png',fullPage:true});
+  const layouts=[];
+  for(const width of [1440,768,393,320]){
+    await page.setViewportSize({width,height:1000});
+    for(const [index,name] of ['我的设备','行车录像','传输任务','设置与帮助'].entries()){
+      await page.locator('nav').getByRole('button').nth(index).click();
+      const bounds=await page.evaluate(()=>({viewport:innerWidth,scroll:document.documentElement.scrollWidth}));
+      if(bounds.scroll>bounds.viewport)throw Error('Horizontal overflow: '+width+' / '+name);
+      layouts.push({width,page:name,...bounds});
+    }
+  }
+  await page.setViewportSize({width:393,height:852});
+  await page.locator('nav').getByRole('button').nth(1).click();
+  await page.screenshot({path:'analysis/mobile-preview.png',fullPage:true});
+  await page.locator('nav').getByRole('button').nth(3).click();
+  if(await page.locator('html').getAttribute('data-theme')!=='light')throw Error('App must use the requested light appearance');
+  if(await page.getByRole('checkbox',{name:/深色/}).count())throw Error('Dark appearance should not be offered');
+  await page.screenshot({path:'analysis/mobile-settings.png',fullPage:true});
+  await page.getByRole('button',{name:'退出演示',exact:true}).click();
+  await page.locator('.topbar').getByRole('button',{name:'连接记录仪'}).click();
+  await page.getByRole('textbox',{name:'记录仪地址'}).fill('8.8.8.8');
+  await page.getByRole('button',{name:'连接设备',exact:true}).click();
+  await page.getByRole('alert').filter({hasText:'请使用车机热点内的局域网地址'}).waitFor();
+  await page.getByRole('button',{name:'关闭连接窗口'}).click();
+  await browser.close();
+  fs.writeFileSync('analysis/ui-verification.json',JSON.stringify({errors,layouts,checks:['category and combined filters','serial transfer queue','cancellation and retry','saved library consistency','demo isolation','player dialog','private-address validation','mobile and desktop layouts','light theme only']},null,2));
+  console.log(JSON.stringify({browserErrors:errors,layoutChecks:layouts.length,interactionGroups:9}));
+  if(errors.length)process.exitCode=1;
+})().catch(error=>{console.error(error);process.exit(1);});

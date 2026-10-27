@@ -1,0 +1,112 @@
+{
+  "errors": [],
+  "layouts": [
+    {
+      "width": 1440,
+      "page": "我的设备",
+      "viewport": 1440,
+      "scroll": 1440
+    },
+    {
+      "width": 1440,
+      "page": "行车录像",
+      "viewport": 1440,
+      "scroll": 1440
+    },
+    {
+      "width": 1440,
+      "page": "传输任务",
+      "viewport": 1440,
+      "scroll": 1440
+    },
+    {
+      "width": 1440,
+      "page": "设置与帮助",
+      "viewport": 1440,
+      "scroll": 1440
+    },
+    {
+      "width": 768,
+      "page": "我的设备",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 768,
+      "page": "行车录像",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 768,
+      "page": "传输任务",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 768,
+      "page": "设置与帮助",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 393,
+      "page": "我的设备",
+      "viewport": 393,
+      "scroll": 393
+    },
+    {
+      "width": 393,
+      "page": "行车录像",
+      "viewport": 393,
+      "scroll": 393
+    },
+    {
+      "width": 393,
+      "page": "传输任务",
+      "viewport": 393,
+      "scroll": 393
+    },
+    {
+      "width": 393,
+      "page": "设置与帮助",
+      "viewport": 393,
+      "scroll": 393
+    },
+    {
+      "width": 320,
+      "page": "我的设备",
+      "viewport": 320,
+      "scroll": 320
+    },
+    {
+      "width": 320,
+      "page": "行车录像",
+      "viewport": 320,
+      "scroll": 320
+    },
+    {
+      "width": 320,
+      "page": "传输任务",
+      "viewport": 320,
+      "scroll": 320
+    },
+    {
+      "width": 320,
+      "page": "设置与帮助",
+      "viewport": 320,
+      "scroll": 320
+    }
+  ],
+  "checks": [
+    "category and combined filters",
+    "serial transfer queue",
+    "cancellation and retry",
+    "saved library consistency",
+    "demo isolation",
+    "player dialog",
+    "private-address validation",
+    "mobile and desktop layouts",
+    "light theme only"
+  ]
+}

@@ -1,0 +1,27 @@
+[package]
+name = "galaxy-recorder"
+version = "0.1.1"
+description = "Galaxy Recorder for desktop and mobile"
+edition = "2021"
+
+[lib]
+name = "galaxy_recorder_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+tokio = { version = "1", features = ["fs", "io-util", "sync", "time", "macros"] }
+quick-xml = "0.38"
+futures-util = "0.3"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

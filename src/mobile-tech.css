@@ -1,0 +1,130 @@
+/* Light technology direction. Mobile layout is the primary design surface. */
+:root,:root[data-theme=light] {--bg:#f5f7fc;--surface:#fff;--surface-alt:#eef2f9;--text:#17253c;--muted:#8c98ab;--secondary:#6a7890;--line:#e8edf5;--accent:#3b76f2;--accent-strong:#2864e2;--soft:#edf3ff;--on-accent:#fff;--shadow:0 8px 24px #294b8106;color-scheme:light;}
+body {background:radial-gradient(ellipse at 85% 0,#eaf1ff66,transparent 45%),var(--bg);}
+.mobile-brand {display:none;}
+.brand-mark {background:linear-gradient(140deg,#5896ff,#3570ed);box-shadow:0 4px 12px #387af122;}
+.hero-art {background:radial-gradient(ellipse at 65% 55%,#e8f0ff,transparent 68%);}
+.surface-panel,.device-panel,.video-card {box-shadow:0 5px 20px #28466b04;}
+.notice {border:1px solid #e0eaff;background:#edf3ff;color:#4c76b6;border-radius:12px;}
+.notice-error {border-color:#f4dfdc;background:#fff3f1;color:var(--danger);}
+.home-intro {display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;}
+.home-eyebrow {display:flex;align-items:center;gap:6px;font:9px/1.4 'Segoe UI',sans-serif;letter-spacing:2.1px;color:#8a9bb4;margin-bottom:9px;}
+.home-eyebrow>span {width:5px;height:5px;border-radius:50%;background:#7ba8ff;}
+.home-intro h1 {font-size:29px;letter-spacing:-.7px;font-weight:600;line-height:1.5;}
+.home-intro h1>span {color:var(--accent);margin-left:3px;}
+.home-intro p {font-size:12px;color:var(--secondary);margin-top:5px;letter-spacing:.6px;}
+.home-emblem {width:43px;height:43px;border:1px solid #e0e8f6;background:#ffffffb0;display:grid;place-items:center;border-radius:14px;color:#a6b9d8;box-shadow:inset 0 1px 2px #fff;}
+.home-layout {display:grid;grid-template-columns:minmax(300px,1fr) 1fr;gap:24px;align-items:start;}
+.tech-device-card {border-radius:24px;background:#fff;border:1px solid #e4eaf4;box-shadow:0 12px 36px #244e8b07,0 1px 1px #fff inset;overflow:hidden;padding:25px 25px 0;position:relative;}
+.tech-device-card:before {content:'';position:absolute;left:20%;right:20%;top:0;height:1px;background:linear-gradient(90deg,transparent,#b5d0ff,transparent);}
+.tech-device-top {display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:1;}
+.tech-mini-label {font:9px/1.3 'Segoe UI',sans-serif;letter-spacing:1.8px;color:#9ba9bc;}
+.tech-device-top h2 {font-size:25px;letter-spacing:1px;font-weight:600;margin-top:6px;}
+.tech-device-top h2>span {font-size:10px;font-weight:400;letter-spacing:0;color:#7b8ca6;background:#f4f7fc;border:1px solid #e9eef6;padding:4px 6px;border-radius:5px;vertical-align:middle;margin-left:7px;}
+.tech-link-status {display:flex;align-items:center;gap:5px;font-size:10px;color:#9aa5b5;border:1px solid #eaf0f6;background:#fafbfd;padding:5px 8px;border-radius:20px;}
+.tech-link-status>i {width:5px;height:5px;background:#aeb9ca;border-radius:50%;}
+.tech-link-status.is-online {color:#5280cb;background:#f0f5ff;border-color:#e3ecff;}.tech-link-status.is-online>i{background:#5d92ee;box-shadow:0 0 0 3px #dce9ff;}
+.tech-product-image {position:relative;height:260px;display:flex;align-items:center;justify-content:center;margin:2px -24px 0;isolation:isolate;}
+.tech-product-image:before {content:'';position:absolute;width:76%;height:65%;border-radius:50%;background:radial-gradient(ellipse,#e8f0ff70,transparent 70%);z-index:-1;}
+.tech-product-image img {width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;}
+.concept-caption {position:absolute;right:23px;bottom:14px;color:#b4bfce;font-size:8px;letter-spacing:1px;}
+.product-annotation {position:absolute;left:24px;bottom:17px;font:7px/1.3 'Segoe UI',sans-serif;letter-spacing:1.6px;color:#9ab1d1;display:flex;align-items:center;gap:7px;}
+.product-annotation>i {height:1px;width:19px;background:#bdd2f4;}
+.corner-mark {position:absolute;width:11px;height:11px;border-color:#c5d7f1;border-style:solid;opacity:.7;}
+.corner-mark.top-left {left:24px;top:20px;border-width:1px 0 0 1px;}
+.corner-mark.bottom-right {right:24px;bottom:37px;border-width:0 1px 1px 0;}
+.tech-feature-pills {display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0 18px;border-bottom:1px solid #edf1f7;color:#8494ab;}
+.tech-feature-pills>span {display:flex;align-items:center;gap:5px;font-size:9px;white-space:nowrap;}
+.tech-feature-pills>span>svg {color:#84a4d4;}
+.tech-feature-pills>i {width:1px;height:9px;background:#e5ebf4;}
+.tech-card-copy {padding:23px 0 21px;text-align:center;}
+.tech-card-copy h3 {font-size:20px;line-height:1.5;font-weight:500;letter-spacing:.5px;margin:0;}
+.tech-card-copy p {font-size:11px;color:#8e9bb0;line-height:1.8;margin-top:7px;}
+.tech-main-button {display:flex;align-items:center;justify-content:center;gap:9px;min-height:46px;width:100%;padding:12px 15px;background:linear-gradient(112deg,#5290ff,#3975ee);border:1px solid #4380f5;border-radius:12px;color:#fff;box-shadow:0 6px 14px #3c7aee1f,inset 0 1px 0 #ffffff28;font-size:13px;font-weight:500;letter-spacing:.6px;}
+.tech-main-button>svg:last-child {margin-left:auto;}.tech-main-button>svg:first-child{margin-right:auto;}
+.tech-main-button:hover:not(:disabled) {box-shadow:0 7px 19px #3c7aee33;background:linear-gradient(112deg,#4988ff,#2c69e2);}
+.tech-secondary-action {display:flex;align-items:center;justify-content:center;gap:5px;width:100%;padding:16px 0 18px;background:transparent;border:0;color:#90a0b7;font-size:10px;}
+.device-card-serial {display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid #f0f3f8;padding:12px 0;color:#bec8d7;font:7px/1.3 'Segoe UI',sans-serif;letter-spacing:1.5px;}
+.home-secondary {min-width:0;display:flex;flex-direction:column;gap:19px;}
+.tech-shortcuts {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.tech-shortcuts>button {display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #e6edf6;background:#fff;padding:20px 8px 18px;border-radius:17px;box-shadow:0 5px 18px #294e8504;min-width:0;}
+.shortcut-icon {display:grid;place-items:center;width:43px;height:43px;background:linear-gradient(140deg,#f0f6ff,#e8f0ff);border:1px solid #e3ecfd;border-radius:13px;color:#5e8fe2;margin-bottom:12px;box-shadow:inset 0 1px 1px #fff;}
+.tech-shortcuts>button:nth-child(2) .shortcut-icon {background:linear-gradient(140deg,#eff9fd,#e9f4fa);color:#64a2bf;border-color:#e2eff5;}
+.tech-shortcuts>button:nth-child(3) .shortcut-icon {background:linear-gradient(140deg,#f3f5fb,#edf0f8);color:#8e9ec0;border-color:#e6eaf4;}
+.tech-shortcuts strong {font-size:12px;font-weight:500;}.tech-shortcuts small{font-size:9px;color:#a0aabd;margin-top:6px;white-space:nowrap;}
+.tech-shortcuts>button:hover {border-color:#ccdcf9;box-shadow:0 7px 20px #3667a90c;}
+.tech-guide,.tech-overview {background:#fff;border:1px solid #e6edf6;border-radius:18px;padding:22px 20px;}
+.home-section-heading {display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.home-section-heading h2 {font-size:13px;font-weight:500;}.home-section-heading>span{font:8px/1.4 'Segoe UI',sans-serif;letter-spacing:1.4px;color:#acb7c7;}
+.guide-steps {display:flex;align-items:flex-start;gap:8px;padding:25px 0 4px;}
+.guide-steps>div {flex:1;text-align:center;min-width:0;}
+.guide-steps>div>span {display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:#81a4da;background:#f3f7fd;border:1px solid #e4ecf8;margin:0 auto 12px;}
+.guide-steps strong {font-size:10px;font-weight:500;white-space:nowrap;}.guide-steps small{display:block;font-size:8px;color:#a4afbf;margin-top:6px;line-height:1.8;}
+.guide-steps>i {width:15px;height:1px;background:#e4ebf5;flex-shrink:0;margin-top:18px;}
+.tech-assurance {display:flex;align-items:center;gap:12px;padding:18px 4px;color:#7993b8;}
+.assurance-symbol {width:42px;height:44px;display:grid;place-items:center;background:linear-gradient(140deg,#e8f0fc,#f3f6fc);border:1px solid #dfe9f8;border-radius:13px;color:#729dd5;flex-shrink:0;}
+.tech-assurance>div {flex:1;min-width:0;}.tech-assurance h2{font-size:12px;font-weight:500;color:#6d82a1;}.tech-assurance p{font-size:9px;line-height:1.9;color:#a1aec0;margin-top:5px;}.tech-assurance>svg{color:#c0cbda;}
+.overview-values {display:grid;grid-template-columns:repeat(3,1fr);padding:25px 0 3px;}.overview-values>div{text-align:center;border-right:1px solid #edf1f7;}.overview-values>div:last-child{border:0;}.overview-values strong{display:block;font:500 29px/1.2 'Segoe UI',sans-serif;color:#4f77b8;letter-spacing:1px;}.overview-values span{display:block;font-size:10px;color:#a0aec2;margin-top:10px;}
+.demo-road-image {width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.scene-1 .demo-road-image {object-position:70% 55%;transform:scale(1.12);}.scene-2 .demo-road-image{object-position:20% 60%;transform:scale(1.2);}.scene-3 .demo-road-image{object-position:80% 70%;transform:scale(1.08);}
+.video-collection .video-card {border-color:#e9edf5;border-radius:16px;box-shadow:0 5px 16px #284b7c05;}
+.video-info p {font-size:10px;line-height:1.7;}.video-info p>span{display:inline;}.scene-watermark{font-size:9px;}
+.video-kind {font-size:9px;border:1px solid #ffffff35;background:#ffffffdd;color:#506b8a;border-radius:5px;backdrop-filter:blur(8px);}
+.video-duration {background:#19345180;backdrop-filter:blur(6px);}
+.play-overlay {background:#ffffffd9;color:#6083b9;box-shadow:0 2px 9px #143c5a16;}
+.video-image:after {content:'';position:absolute;inset:60% 0 0;background:linear-gradient(transparent,#15385830);pointer-events:none;}
+.video-placeholder:after {display:none;}
+.filter-tabs {gap:5px;background:#edf1f8;border:1px solid #e8edf5;padding:4px;border-radius:11px;}
+.filter-tabs button {padding:7px 13px;border-radius:8px;color:#91a0b5;font-size:11px;}
+.filter-tabs button.active {background:#fff;color:#477dc9;font-weight:500;box-shadow:0 1px 5px #2d4a7a0c;}
+.filter-tabs button.active:after {display:none;}
+.library-toolbar {border-bottom:0;padding-bottom:4px;}
+.date-heading h2 {color:#425874;font-size:13px;}
+.save-button {border-color:#e8edf5;background:#fbfcff;color:#8ba4c4;border-radius:8px;}
+.video-title {color:#304765;font-variant-numeric:tabular-nums;}
+.recorder-strip {border-radius:13px;border-color:#e5edf9;background:linear-gradient(110deg,#fff,#f8faff);}
+.primary-button {border-radius:10px;min-height:39px;box-shadow:0 4px 10px #3b76f217;}
+.secondary-button {border-radius:10px;}.form-field input{border-radius:11px;}.modal{border-radius:22px;}.modal-symbol{background:#edf4ff;color:#6c98dd;}
+.surface-panel {border-radius:17px;border-color:#e5edf6;}.feature-status{background:#f7f9fd;border-color:#e8eef7;color:#9baac0;}
+.transfer-card {border-radius:16px;border-color:#e4edf8;}.transfer-symbol{border-radius:13px;background:#f4f8ff;border-color:#e2ecfd;color:#7ca2dc;}.transfer-symbol.done{background:#eef5ff;color:#6896de;}
+.progress-track {height:5px;background:#edf2f9;}.progress-track>div{background:linear-gradient(90deg,#73aaff,#4285f3);}
+.player-area {background:#f1f5fc;color:#92a7c4;}.player-note{background:#f5f8fe;padding:13px;border:1px solid #e8effb;border-radius:12px;}
+.help-button {color:#91a5c3;}
+.workspace-footer {color:#a8b6ca;border-top-color:#e9eef7;}
+@media(max-width:1000px) {.home-layout{grid-template-columns:minmax(0,1fr);}.home-secondary{display:grid;grid-template-columns:1fr 1fr;align-items:start;}.tech-shortcuts,.tech-assurance{grid-column:1/-1;}.tech-product-image{height:240px;}.tech-shortcuts>button{padding:18px 10px;}}
+@media(max-width:620px) {
+  body{background:radial-gradient(ellipse at 100% 0,#e7efff80,transparent 38%),#f5f7fc;}
+  .topbar{position:sticky;top:0;height:calc(70px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 20px 0;background:#f5f7fce8;border:0;backdrop-filter:blur(14px);z-index:6;gap:12px;}
+  .breadcrumb{display:none;}.mobile-brand{display:flex;align-items:center;gap:9px;border:0;background:none;padding:0;text-align:left;white-space:nowrap;flex-shrink:0;}
+  .mobile-brand-icon{width:34px;height:34px;display:grid;place-items:center;background:linear-gradient(135deg,#75a9ff,#427eea);border:1px solid #6b9ef5;border-radius:11px;color:#fff;box-shadow:0 4px 10px #3d7ef326,inset 0 1px 0 #ffffff70;}
+  .mobile-brand>span:last-child{font-size:16px;font-weight:600;letter-spacing:.3px;color:#2e435e;}.mobile-brand small{display:block;font:7px/1.4 'Segoe UI',sans-serif;letter-spacing:1.9px;color:#9cacc2;margin-top:4px;}
+  .topbar-actions{gap:6px;}.help-button{width:30px;height:34px;padding:5px;}.connection-button{font-size:10px;min-height:32px;border-radius:20px;padding:7px 9px;border-color:#e2eaf8;box-shadow:0 2px 6px #3b598008;color:#86a0c0;background:#ffffffb0;}.connection-button.connected{color:#658fd0;background:#eaf2ff;}
+  .connection-button span{font-size:9px;}.demo-badge{font-size:8px;padding:3px 4px;}
+  .workspace{padding-bottom:calc(95px + env(safe-area-inset-bottom));}.main-content{padding:17px 20px 24px;}.main-content:has(.tech-home){padding-top:14px;}
+  .home-intro{margin-bottom:20px;}.home-eyebrow{font-size:8px;letter-spacing:1.7px;margin-bottom:8px;}.home-intro h1{font-size:27px;line-height:1.4;}.home-intro p{font-size:11px;letter-spacing:.5px;margin-top:7px;}.home-emblem{width:38px;height:38px;border-radius:13px;}
+  .home-layout{display:flex;flex-direction:column;gap:17px;}.tech-device-card{width:100%;padding:22px 21px 0;border-radius:23px;box-shadow:0 8px 32px #406aa80a;border-color:#e2eaf7;}
+  .tech-device-top h2{font-size:25px;margin-top:6px;}.tech-mini-label{font-size:8px;letter-spacing:1.6px;}.tech-device-top h2>span{font-size:9px;}.tech-link-status{font-size:9px;padding:5px 7px;}
+  .tech-product-image{height:207px;margin:5px -20px 0;}.tech-product-image img{object-fit:contain;}.concept-caption{right:21px;bottom:12px;font-size:7px;}.product-annotation{left:21px;bottom:13px;font-size:6px;letter-spacing:1.3px;}.corner-mark.top-left{top:15px;left:21px;}.corner-mark.bottom-right{right:21px;bottom:30px;}
+  .tech-feature-pills{gap:9px;padding:10px 0 17px;}.tech-feature-pills>span{font-size:9px;gap:4px;}.tech-feature-pills>i{height:8px;}
+  .tech-card-copy{padding:20px 0 20px;}.tech-card-copy h3{font-size:21px;letter-spacing:.3px;}.tech-card-copy p{font-size:10px;line-height:1.9;margin-top:6px;}
+  .tech-main-button{min-height:47px;border-radius:13px;font-size:13px;letter-spacing:1px;}.tech-secondary-action{font-size:10px;padding:15px 0 16px;min-height:43px;}.device-card-serial{font-size:6px;padding:11px 0;letter-spacing:1.4px;}
+  .home-secondary{display:flex;flex-direction:column;gap:17px;width:100%;}.tech-shortcuts{gap:10px;width:100%;}.tech-shortcuts>button{padding:17px 5px 16px;border-radius:17px;}.shortcut-icon{width:39px;height:39px;border-radius:12px;margin-bottom:12px;}.tech-shortcuts strong{font-size:12px;}.tech-shortcuts small{font-size:8px;margin-top:6px;letter-spacing:.1px;}
+  .tech-guide,.tech-overview{width:100%;padding:19px 15px;border-radius:18px;}.home-section-heading h2{font-size:13px;}.home-section-heading>span{font-size:7px;letter-spacing:1.1px;}.guide-steps{padding-top:23px;gap:3px;}.guide-steps>i{width:10px;}.guide-steps strong{font-size:10px;}.guide-steps small{font-size:8px;}.tech-assurance{padding:3px 1px 0;gap:11px;}.tech-assurance h2{font-size:11px;}.tech-assurance p{font-size:8px;}.assurance-symbol{width:37px;height:40px;border-radius:12px;}
+  .sidebar{inset:auto 14px calc(10px + env(safe-area-inset-bottom)) 14px;width:auto;height:65px;padding:6px 5px;background:#fffffff0;border:1px solid #fff;border-radius:22px;box-shadow:0 6px 30px #305a9820,0 1px 6px #4871ab08;backdrop-filter:blur(20px);z-index:10;}
+  .sidebar nav{height:100%;}.nav-item{padding:5px 2px 3px;gap:6px;font-size:9px;line-height:1.3;color:#9ba9bd;border-radius:14px;}.nav-item>svg{width:21px;height:21px;stroke-width:1.6;}.nav-item.active{color:#4b83df;background:#f2f6ff;}.nav-item.active>svg{background:none;box-shadow:none;stroke-width:1.9;}.nav-mobile-label{font-size:9px;letter-spacing:.3px;}
+  .page-heading{margin-bottom:19px;gap:13px;}.page-heading h1{font-size:27px;line-height:1.5;}.page-heading p{font-size:11px;color:#91a0b5;margin-top:3px;}.eyebrow{font-size:7px;letter-spacing:1.8px;color:#a0afc4;margin-bottom:8px;}
+  .heading-actions{gap:8px;}.heading-actions .secondary-button{font-size:10px;min-height:35px;padding:7px 10px;border-color:#e4ecf8;box-shadow:0 2px 4px #5c7fa003;}
+  .recorder-strip{margin:0 0 20px;padding:12px 13px;border-radius:13px;}.recorder-strip strong{font-size:10px;}.recorder-strip .subtle-text{font-size:9px;}
+  .library-toolbar{gap:14px;margin-top:4px;padding-bottom:0;}.filter-tabs{gap:3px;padding:4px;border-radius:12px;}.filter-tabs button{min-height:35px;font-size:11px;padding:6px 8px;border-radius:9px;flex:1;}.filter-tabs button.active{font-weight:500;}
+  .toolbar-controls{gap:8px;}.search-field{border-color:#e7edf7;border-radius:10px;padding:9px 10px;}.search-field input{font-size:11px;color:#7c91af;}.search-field input::placeholder{color:#a8b6c9;}.date-input{font-size:10px;min-width:113px;max-width:126px;min-height:34px;border-color:#e6edf7;border-radius:10px;padding:7px 6px;color:#9eacc0;}.view-toggle{border-color:#e3ebf6;}.view-toggle button{height:32px;color:#a7b5c8;}.view-toggle button.active{color:#6b91cd;border-radius:7px;}
+  .date-heading{margin-top:22px;margin-bottom:15px;}.date-heading h2{font-size:12px;letter-spacing:.5px;color:#425a7a;}.date-heading h2>span{font-size:9px;letter-spacing:0;color:#acb9ca;}
+  .video-collection.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 11px;}.video-collection .video-card{border-radius:15px;border:1px solid #e8edf6;box-shadow:0 4px 14px #37547b05;}.video-image{aspect-ratio:1.52;}.video-kind{left:8px;top:8px;padding:3px 5px;font-size:8px;gap:3px;}.video-kind svg{width:9px;height:9px;}.video-duration{font-size:8px;padding:3px 5px;bottom:8px;right:8px;border-radius:5px;}.scene-watermark{font-size:7px;bottom:8px;left:8px;color:#fff9;}
+  .play-overlay{width:30px;height:30px;opacity:1;color:#5d85bc;}.play-overlay>svg{width:11px;height:11px;}.video-info{padding:12px 10px 13px;gap:3px;}.video-title{font-size:14px;font-weight:500;letter-spacing:.6px;}.video-info p{font-size:9px;color:#a3b0c4;gap:4px;line-height:1.8;margin-top:5px;}.video-info p>span{display:inline;}.save-button{padding:4px;border:0;background:none;min-height:28px;}.save-button.saved{background:#edf4ff;}.save-button>svg{width:15px;height:15px;}
+  .notice{font-size:10px;margin-bottom:18px;border-radius:11px;}.workspace-footer{border:0;padding:8px 20px;font-size:8px;}.workspace-footer>span:first-child{opacity:.8;}
+  .selection-bar{bottom:calc(88px + env(safe-area-inset-bottom));border-radius:15px;border-color:#dde9fc;box-shadow:0 8px 30px #3c74b924;}.selection-bar>span{font-size:10px;}.selection-bar .primary-button{min-height:37px;border-radius:10px;}
+  .transfer-card{padding:19px 14px;border-radius:17px;}.transfer-symbol{width:38px;height:45px;border-radius:12px;}.transfer-heading h2{font-size:14px;color:#466182;letter-spacing:.5px;}.transfer-heading h2>span{font-size:9px;color:#a7b4c8;}.task-state{font-size:9px;color:#8ba0bf;}.task-state.done{color:#6993d3;}.transfer-meta>span{font-size:9px;color:#9baec7;}.progress-track{height:4px;margin-top:14px;}.transfer-list{gap:13px;}
+  .surface-panel{padding:20px;border-radius:18px;border-color:#e7edf7;box-shadow:0 6px 20px #31578703;}.section-header h2{font-size:14px;color:#476181;}.setting-row{padding:19px 0;border-color:#f0f3f9;}.setting-row strong{font-size:12px;color:#536b8a;}.setting-row div>span{font-size:10px;color:#a1afc3;line-height:1.9;}.setting-value{font-size:10px;color:#8ca4c6;}.feature-status{font-size:9px;color:#a0b1c8;}.help-panel ol{font-size:11px;line-height:2.4;color:#8ba0be;}.help-panel>p{color:#a2b0c4;font-size:10px;}.about-panel .brand-mark{width:38px;height:38px;border-radius:12px;}
+  .modal{border-radius:24px;border:1px solid #e2ebf9;width:min(450px,calc(100% - 26px));}.modal-content{padding:24px;}.modal::backdrop{background:#617da34d;backdrop-filter:blur(8px);}.modal-content>h2{font-size:23px;color:#3e5878;}.modal-description{font-size:11px;color:#9baac0;}.modal-symbol{border:1px solid #dfebff;border-radius:15px;background:linear-gradient(140deg,#edf5ff,#e7f0ff);color:#759edc;}.form-field{color:#7b90af;}.form-field input{min-height:45px;background:#f7faff;font-size:14px;}.form-field small{font-size:9px;color:#a4b2c7;}.connection-steps>div>span{background:#f0f5ff;color:#82a7e1;}.connection-steps strong{font-size:12px;color:#677e9f;}.connection-steps p{font-size:10px;color:#a4b2c7;}.connect-actions .primary-button,.connect-actions .secondary-button{min-height:44px;font-size:12px;border-radius:11px;}.modal-bottom{border-color:#edf2fa;}
+  .player-area{border-radius:15px;}.player-details{font-size:10px;color:#8fa3c0;}.player-heading strong{font-size:15px;letter-spacing:.5px;}.player-heading div>span{font-size:10px;color:#a0afc4;}.player-note strong{font-size:11px;color:#6a85ab;}.player-note p{font-size:10px;color:#9aacC5;}.player-note+button{min-height:45px;font-size:12px;border-radius:12px;}
+}
+@media(max-width:359px) {.topbar{padding-left:16px;padding-right:16px;}.main-content{padding-left:16px;padding-right:16px;}.mobile-brand>span:last-child{font-size:15px;}.mobile-brand-icon{width:31px;height:31px;border-radius:10px;}.topbar .help-button{display:none;}.topbar .connection-button span{display:none;}.topbar .connection-button{width:31px;padding:7px;justify-content:center;}.demo-badge{font-size:7px;}.tech-device-card{padding-left:18px;padding-right:18px;}.tech-product-image{height:180px;margin-left:-17px;margin-right:-17px;}.tech-card-copy h3{font-size:20px;}.tech-feature-pills{gap:6px;}.tech-feature-pills>span{font-size:8px;}.tech-shortcuts{gap:8px;}.tech-shortcuts strong{font-size:11px;}.tech-shortcuts small{font-size:7px;}.guide-steps small{font-size:7px;}.tech-assurance p{font-size:8px;}.video-collection.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.video-info{padding:11px 8px;}.video-title{font-size:12px;}.video-info p{font-size:8px;gap:3px;}.video-image{aspect-ratio:1.5;}.video-kind{font-size:7px;left:6px;top:6px;padding:2px 4px;}.video-duration{font-size:7px;bottom:6px;right:6px;}.scene-watermark{font-size:6px;}.toolbar-controls{flex-wrap:wrap;}.date-input{min-width:112px;max-width:119px;}.search-field{min-width:85px;}.view-toggle{margin-left:auto;}.nav-item{font-size:8px;}.nav-mobile-label{font-size:8px;}}
