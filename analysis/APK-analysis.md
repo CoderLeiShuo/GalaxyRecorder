@@ -82,7 +82,7 @@
 ### 已找到的协议线索
 
 1. HTTP 设备接口族：`/cgi-bin/Config.cgi?action=...&property=...`。
-2. 录像目录接口模板：`/cgi-bin/Config.cgi?action=dir&property={category}&format=all&count={count}&from={offset}`。`MOVIE`、`SOS` 等分类/目录常量需要结合具体响应确认。
+2. 录像目录接口模板：`/cgi-bin/Config.cgi?action=dir&property={category}&format=all&count={count}&from={offset}`。2026-10-27 逐方法核实：A7 分类属性为普通 `DCIM`、紧急 `EVENT`；`MOVIE / SOS` 属于 usesMstar 分支，不能用于当前星越 L 适配。实际列表响应仍需实车确认。
 3. 实现中存在 `DVR`、`Camera.Menu.*`、`Camera.Menu.FWversion`、`Camera.Menu.HeartBeat`、`Camera.Menu.CardInfo.*` 等查询。不同方案及固件的属性集合有差异，不能保证所有字段都适用于星越 L。
 4. 实时预览包含 RTSP 协商及 `/liveRTSP/v1`、`/liveRTSP/av0`、`/liveRTSP/av1`、`/liveRTSP/av2`、`/liveRTSP/av4` 等候选路径，应协商并记住成功结果。
 5. A7 列表模块有分页参数回退、重复条目去重、短页和不完整响应处理。复刻时应保留这些兼容思想。

@@ -1,0 +1,14 @@
+{
+  "simulatedBridge": true,
+  "liveVehicle": false,
+  "errors": [],
+  "checks": [
+    "automatic discovery without IP",
+    "Wi-Fi-only self check",
+    "progress event",
+    "cancel native discovery",
+    "failure diagnostics",
+    "connect and load categories",
+    "disconnect releases network"
+  ]
+}

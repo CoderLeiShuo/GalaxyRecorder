@@ -1143,13 +1143,14 @@ dependencies = [
 
 [[package]]
 name = "galaxy-recorder"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "futures-util",
  "quick-xml 0.38.4",
  "reqwest 0.12.28",
  "serde",
  "serde_json",
+ "socket2",
  "tauri",
  "tauri-build",
  "tauri-plugin-opener",

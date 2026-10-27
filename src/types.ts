@@ -13,7 +13,11 @@ export type Video = {
   savedPath?: string;
   demo?: boolean;
 };
-export type Recorder = { address: string; protocol: string; firmware: string; vehicle: string };
+export type Recorder = { address: string; protocol: string; firmware: string; vehicle: string; discoveredVia?: string };
+export type WifiLink = { id: string; interfaceName: string; ip: string; prefixLength: number; gateway: string | null };
+export type NetworkInfo = { platform: string; available: boolean; selected: WifiLink | null; networks: WifiLink[]; bound: boolean; defaultTransport: string; message: string };
+export type ConnectionProgress = { checked: number; total: number; message: string };
+export type ConnectionDiagnostics = { method: string; result: string; network: NetworkInfo | null; checked: number; total: number; lastError: string | null; events: { elapsedMs: number; stage: string; message: string }[] };
 export type Task = {
   id: string;
   video: Video;
