@@ -1,0 +1,27 @@
+{
+  "mockedRecorder": true,
+  "checks": [
+    "one title combines vehicle and app name with model year and configuration below",
+    "title vehicle and picture remain directly tappable without edit badges",
+    "device plus button removed while manage connection remains",
+    "disconnection retains remembered vehicle identity",
+    "remembered vehicle survives restart",
+    "demo mode remains absent",
+    "custom recorder title survives restart",
+    "custom image retains transparent pixels",
+    "alias and image survive restart without changing identified model",
+    "default recorder image restores",
+    "invalid image leaves current picture intact",
+    "reset restores automatic combined title",
+    "context menus and image long press callouts are disabled",
+    "combined title fits phone and desktop widths",
+    "transfer page Wi-Fi button stays removed",
+    "all schemes and full models remain available and cancel preserves selection",
+    "all connection schemes save on confirmation",
+    "unknown device does not inherit another vehicle name",
+    "confirmed model year and configuration persist",
+    "profile survives restart",
+    "native Wi-Fi search receives credentials"
+  ],
+  "errors": []
+}

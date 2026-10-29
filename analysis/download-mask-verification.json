@@ -1,0 +1,21 @@
+{
+  "realFFmpegOutput": true,
+  "maskedPixelMean": 0.841,
+  "originalPixelMean": 174.898,
+  "sourceUnchanged": true,
+  "output": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264"
+      },
+      {
+        "codec_name": "aac"
+      }
+    ],
+    "format": {
+      "duration": "12.000000"
+    }
+  }
+}

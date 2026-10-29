@@ -1,0 +1,73 @@
+{
+  "File": "jixing-yingji-0.8.4-minimal-camera-arm64-test.apk",
+  "ProductName": "吉行影记",
+  "Version": "0.8.4",
+  "VersionCode": 8004,
+  "BuiltAt": "2026-10-28T17:28:12+08:00",
+  "Stack": "Tauri 2 + React + TypeScript + Rust; Android Kotlin media and network plugins",
+  "Bytes": 13081508,
+  "MiB": 12.48,
+  "SHA256": "7c81f8497258933cfa39b08f9613328a745c3d0046060194b181e4edd7673c75",
+  "SignatureVerified": true,
+  "SigningCertificateSHA256": "c05531d9229ed474d85cbb2c32f8bfe8ee775a5e3711c448315490a3ce345c0e",
+  "SignatureCompatibleWith083": true,
+  "PreviousAPKUnchanged": true,
+  "ZipCRCVerified": true,
+  "ZipAlignment16KBVerified": true,
+  "ElfLoadAlignment": [
+    16384,
+    16384,
+    16384,
+    16384
+  ],
+  "NativeLibraryBytes": 10348800,
+  "NativeLibrarySHA256": "6f30869d70e2d2acd5ea856cb471a01e0db390e901f880aa7bde746fe1950f7d",
+  "PackagedNativeMatchesBuild": true,
+  "PackagedFrontendMatchesBuild": true,
+  "PackagedFrontendAssets": [
+    "index-DDgXBV36.js",
+    "index-B_kHwQzl.css"
+  ],
+  "PackagedLogoPixelMatches": {
+    "ic_launcher_foreground.png": "res/as.png",
+    "ic_launcher_background.png": "res/Gx.png",
+    "ic_launcher.png": "res/o-.png",
+    "ic_launcher_round.png": "res/Gc.png"
+  },
+  "AdaptiveLauncherReferencesVerified": true,
+  "AdaptiveWhitePixelsClippedByCircleMask": 0,
+  "PluginAndVolumeMethodsPresentInDex": [
+    "getStreamVolume",
+    "setStreamVolume",
+    "RecorderMediaPlugin",
+    "RecorderNetworkPlugin",
+    "directoryResult",
+    "scanResult",
+    "imageResult",
+    "permissionResult",
+    "searchRecorderWifi"
+  ],
+  "Installed": false,
+  "LaunchVerified": false,
+  "VehicleVerified": false,
+  "SystemVolumeRuntimeVerified": false,
+  "Tests": {
+    "Frontend": 36,
+    "FrontendProductionBuild": true,
+    "AndroidReleaseBuild": true,
+    "Scope": "Icon assets, version bump and packaging only; no playback/connection/library behavior changed from 0.8.3."
+  },
+  "PreviousReleaseVersion": "0.8.3",
+  "PreviousReleaseBytes": 13245572,
+  "LogoConcept": "01 极简镜头",
+  "LogoMaster": "design/app-icon-v3/master.png",
+  "LogoPrompt": "design/app-icon-v3/README.md",
+  "LogoGeneration": "built-in image_gen edit of user-approved concept preview",
+  "Notes": [
+    "User selected concept 01. Production artwork retains the white camera frame, round lens, recording dot and lower-right road marks on a blue gradient.",
+    "Launcher, round/adaptive Android, desktop and favicon assets generated from the new master. Device top-left logo remains removed.",
+    "36 frontend unit tests and release builds passed; packaged icon pixels, adaptive references, signature, native/frontend byte fingerprints and 16 KB ZIP/ELF alignment verified.",
+    "Functional UI/native capabilities remain from 0.8.3. No phone installation and no original APK modifications.",
+    "See analysis/RELEASE-0.8.4.md."
+  ]
+}

@@ -1,0 +1,10 @@
+# 设备首页第二版效果图
+
+生成方式：内置 image_gen 工具，ui-mockup，新图生成。仅设计预览，尚未替换运行界面。
+
+Use case: ui-mockup
+Asset type: high fidelity Android mobile device-home screen for GalaxyRecorder, Chinese dashcam app for 星越 L 2026款.
+Primary request: produce one polished new device home UI concept with a more technological central dashcam illustration, retaining a calm premium glacier-silver design. A single complete portrait screen, 1080x1920 composition, flat screen presentation without a phone frame, no surrounding design board.
+Style: sophisticated production app UI, pale ice-blue and silver white background, dark navy typography, cobalt blue primary action, spacious rounded cards, restrained soft shadows, crisp Chinese text, consistent fine line icons. The central hero is a beautifully rendered realistic futuristic compact dashcam, titanium silver and graphite metal body, large sapphire-blue optical lens, precision detailing, fine cyan light ring, floating above subtle luminous orbital rings; elegant technology rather than sci-fi clutter.
+Layout from top to bottom: small status bar 9:41. App header with small camera brand icon and editable title “星越记录仪”, small edit pencil and scan icon at right. Large heading “我的记录仪” and small subtitle “每一程，都安心”. A large airy hero area with the futuristic dashcam at its center, a small green-dot pill “已连接” above it. Below hero: model “星越 L · 2026款”, a quiet single line “Wi-Fi 直连  ·  原画回看”. Broad cobalt rounded primary button “查看行车录像” with play-circle line icon. Below, a tidy white 2 by 2 shortcut grid with icons and labels “实时画面”, “行车录像”, “传输任务”, “设备设置”. Small low-contrast helper line “下拉刷新连接状态”. Bottom navigation four items “设备”, “录像”, “传输”, “设置”; 设备 active blue, other icons gray. Comfortable Android safe areas.
+Constraints: all listed Chinese text exact and readable, cohesive optical sizes, practical touch targets, no IP addresses or technical network messages, no invented storage statistics or unsupported functions, no watermarks, no marketing board or annotations. Show the entire screen with bottom navigation.

@@ -1,7 +1,7 @@
 /* Approved design A: a working interface over independent glacier/product assets. */
 :root,:root[data-theme=light] {--bg:#f3f8ff;--text:#142039;--muted:#8e9db4;--secondary:#71829d;--accent:#2c80ff;--accent-strong:#1770f4;--soft:#eaf4ff;--line:#e6eef9;}
 .app-shell {position:relative;isolation:isolate;}
-.glacier-backdrop {position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#f8fcff18,#eaf4ff40),url('/images/glacier-background.png') center center/cover no-repeat;}
+.glacier-backdrop {position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#f8fcff18,#eaf4ff40),url('/images/glacier-background.webp') center center/cover no-repeat;}
 .workspace {background:#f5faff5c;}
 .glacier-home {max-width:440px;margin:0 auto;}
 .glacier-home-heading {text-align:center;margin:5px 0 4px;}

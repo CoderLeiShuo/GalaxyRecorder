@@ -1,0 +1,20 @@
+{
+  "simulatedBridge": true,
+  "liveVehicle": false,
+  "checks": [
+    "batch video sharing",
+    "original file sharing",
+    "folder export reports partial success",
+    "stops after the current export",
+    "download masking preference persists",
+    "storage category usage and emergency recording state",
+    "view and copy persisted operation logs",
+    "log file sharing and saving",
+    "format blocked during active downloads",
+    "masking phase in transfer queue",
+    "cancel all downloads",
+    "history cleanup preserves saved videos",
+    "mobile workflow layout"
+  ],
+  "errors": []
+}

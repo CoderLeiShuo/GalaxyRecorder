@@ -1,0 +1,20 @@
+{
+  "mockedNativeDecoder": true,
+  "checks": [
+    "gallery URI opens through native decoder in ordinary view",
+    "native player removes stop and sends 4x playback speed",
+    "opening video reads system volume without changing it",
+    "slider changes system volume in actual hardware steps",
+    "hardware volume keys and native gestures synchronize with React controls",
+    "unmute restores last audible level without setting maximum volume",
+    "only explicit fullscreen button opens native fullscreen",
+    "native player has no zoom button",
+    "native more action pauses and hides video behind file drawer",
+    "shares gallery file from drawer",
+    "closing drawer restores ordinary player",
+    "closing player releases native surface",
+    "opening a video while system is muted preserves mute",
+    "a muted launch uses a moderate fallback when explicitly unmuted"
+  ],
+  "errors": []
+}

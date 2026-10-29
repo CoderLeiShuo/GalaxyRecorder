@@ -1,0 +1,109 @@
+{
+  "File": "jixing-yingji-0.8.0-ui-lite-arm64-test.apk",
+  "Version": "0.8.0",
+  "VersionCode": 8000,
+  "BuiltAt": "2026-10-28T14:08:23+08:00",
+  "Stack": "Tauri 2 + React + TypeScript + Rust; Android capabilities through Kotlin plugins",
+  "ConnectionProfiles": [
+    "AUTO",
+    "A7",
+    "E5",
+    "L6",
+    "GENERIC1",
+    "GENERIC2",
+    "GENERIC3"
+  ],
+  "Bytes": 12833784,
+  "MiB": 12.24,
+  "SHA256": "6575DE641054FB9D0A8BE84B3E6A5CAFA39B6543B1D96188821604E718167BC7",
+  "SignatureVerified": true,
+  "SigningCertificateSHA256": "c05531d9229ed474d85cbb2c32f8bfe8ee775a5e3711c448315490a3ce345c0e",
+  "SignatureCompatibleWith060": true,
+  "SignatureCompatibleWith050": true,
+  "SignatureCompatibleWith040": true,
+  "SignatureCompatibleWith030": true,
+  "SignatureCompatibleWith021": true,
+  "SignatureCompatibleWith020": true,
+  "SignatureCompatibleWith013": true,
+  "SignatureCompatibleWith012": false,
+  "Installed": false,
+  "LaunchVerified": false,
+  "VehicleVerified": false,
+  "NativeWifiSearchRuntimeVerified": false,
+  "VehicleInformationRuntimeVerified": false,
+  "L6PrivateLivePreviewImplemented": false,
+  "OriginalApkSHA256": "0e737970e57c16dce6a70eac673d089d99609aebc98bdd8846175bd16c4e4371",
+  "Tests": {
+    "Rust": 68,
+    "Frontend": 33,
+    "AndroidJVM": 15,
+    "MediaUI": 34,
+    "NativePlayerUIBridge": 9,
+    "ConnectionStateUI": 11,
+    "WorkflowsUI": 13,
+    "VehicleAndSchemesUI": 18,
+    "TotalChecks": 201,
+    "MockedRecorderInUI": true,
+    "MockedAndroidSystemCallsInUI": true,
+    "RealLocalProtocolHTTPFixtures": true,
+    "FrontendProductionBuild": true,
+    "AndroidReleaseBuild": true,
+    "PackagedNativeMatchesBuild": true,
+    "PackagedFrontendMatchesBuild": true,
+    "NativeWifiSearchPresentInDex": true
+  },
+  "Notes": [
+    "Renamed to 吉行影记; package id and signing certificate retained. Previous default display name migrates; user-chosen names remain.",
+    "User-approved device image retained through pixel-identical lossless WebP; logo unchanged.",
+    "Unused artwork and test fixtures excluded from product assets; release size optimization enabled.",
+    "ARM64 ELF LOAD segments and APK ZIP verified for 16 KB alignment. Native library is stored uncompressed.",
+    "All original connection schemes retained. L6 private live preview remains unimplemented and disabled.",
+    "UI device and Android calls are mocked; this APK was not installed or vehicle-tested.",
+    "See analysis/RELEASE-0.8.0.md."
+  ],
+  "ProductName": "吉行影记",
+  "PreviousProductName": "银河记录仪",
+  "PreviousBytes": 19884384,
+  "PreviousMiB": 18.96,
+  "ReductionBytes": 7050600,
+  "ReductionPercent": 35.46,
+  "SignatureCompatibleWith070": true,
+  "NativeLibraryBytes": 10298728,
+  "NativeLibrarySHA256": "843044d5a131def6e4cc6f8cf66d2ae9a71951c2d0e9da6a45ec3ee9561af799",
+  "NativeLibraryCompressed": false,
+  "ElfLoadAlignment": [
+    16384,
+    16384,
+    16384,
+    16384
+  ],
+  "ZipAlignment16KBVerified": true,
+  "NameVerifiedInManifest": true,
+  "PluginCallbacksPreservedInDex": [
+    "RecorderMediaPlugin",
+    "RecorderNetworkPlugin",
+    "directoryResult",
+    "scanResult",
+    "imageResult",
+    "permissionResult",
+    "searchRecorderWifi"
+  ],
+  "ArchiveBreakdown": {
+    "Other": {
+      "Bytes": 103808,
+      "CompressedBytes": 32274
+    },
+    "Dex": {
+      "Bytes": 3004856,
+      "CompressedBytes": 1532869
+    },
+    "Native": {
+      "Bytes": 10298728,
+      "CompressedBytes": 10298728
+    },
+    "AndroidResources": {
+      "Bytes": 1127131,
+      "CompressedBytes": 871937
+    }
+  }
+}

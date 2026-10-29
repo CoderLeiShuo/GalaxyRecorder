@@ -1,0 +1,7 @@
+{
+  "default": "master.png",
+  "bg_color": "#02093e",
+  "android_bg": "background.png",
+  "android_fg": "adaptive-foreground.png",
+  "android_fg_scale": 85
+}

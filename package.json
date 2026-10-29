@@ -1,6 +1,6 @@
 {
   "name": "galaxy-recorder",
-  "version": "0.1.2",
+  "version": "0.8.5",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,7 +13,9 @@
     "desktop:build": "tauri build",
     "android:init": "tauri android init",
     "android:dev": "tauri android dev",
-    "android:build": "tauri android build --apk"
+    "android:build": "tauri android build --apk",
+    "ios:init": "tauri ios init",
+    "ios:build": "python3 tools/package_ios.py"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",

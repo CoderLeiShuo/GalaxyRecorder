@@ -1,5 +1,6 @@
+import {recordingFixtures} from './recordingFixtures.test-data';
 import { describe, expect, it } from 'vitest';
-import { demoVideos, formatDuration, validateAddress, videoSource, visibleVideos } from './recorder';
+import { formatDuration, validateAddress, videoSource, visibleVideos } from './recorder';
 
 describe('recorder connection boundaries',()=>{
   it('normalizes private addresses without accepting web paths',()=>{
@@ -10,14 +11,14 @@ describe('recorder connection boundaries',()=>{
 });
 describe('library filtering',()=>{
   it('combines date, category, query and saved status',()=>{
-    const items=[{...demoVideos[0],savedPath:'demo'},demoVideos[2]];
+    const items=[{...recordingFixtures[0],savedPath:'/fixture/clip.mp4'},recordingFixtures[2]];
     expect(visibleVideos(items,'saved','','')).toHaveLength(1);
     expect(visibleVideos(items,'event','2026-10-27','082106')).toHaveLength(1);
     expect(visibleVideos(items,'event','2026-10-26','')).toHaveLength(0);
     expect(visibleVideos(items,'all','','')[0].time).toBe('08:26:40');
   });
-  it('does not try to play a fictitious demo file',()=>{
-    expect(videoSource({...demoVideos[0],savedPath:'demo'})).toBeUndefined();
+  it('keeps browser previews from treating local files as native URLs',()=>{
+    expect(videoSource({...recordingFixtures[0],savedPath:'/fixture/clip.mp4'})).toBeUndefined();
     expect(formatDuration(null)).toBe('时长待读取');
   });
 });

@@ -1,0 +1,144 @@
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', args: ['--autoplay-policy=no-user-gesture-required'] });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const errors = []; const checks = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.addInitScript(() => {
+    globalThis.isTauri = true;
+    let index = 0; const callbacks = new Map(); const listeners = new Map();
+    const video = { id: 'normal:fixture', name: '20261027_082640.mp4', path: '/mnt/mmc/Normal/20261027_082640.mp4', category: 'normal', date: '2026-10-27', time: '08:26:40', size: 0, duration: null };
+    const recorder = { address: '192.168.43.8', protocol: 'A7 / Config.cgi', firmware: 'test', vehicle: '2026 款星越 L' };
+    const mock = globalThis.mediaMock = { calls: [], saved: [], settings: { saveMode: 'gallery', displayName: localStorage.getItem('fixture-display-name') || '银河记录仪', directory: null, directoryLabel: null, maskByDefault: false, keepScreenOn: true }, video };
+    globalThis.__TAURI_EVENT_PLUGIN_INTERNALS__ = { unregisterListener: (_, id) => listeners.delete(id) };
+    globalThis.__TAURI_INTERNALS__ = {
+      transformCallback: callback => { callbacks.set(++index, callback); return index; }, unregisterCallback: id => callbacks.delete(id),
+      invoke: async (command, args = {}) => {
+        mock.calls.push({ command, args });
+        if (command === 'plugin:event|listen') { const id = ++index; listeners.set(id, args); return id; }
+        if (command === 'plugin:event|unlisten') return;
+        if (command === 'list_saved') return mock.saved;
+        if (command === 'list_transfers') return [];
+        if (command === 'enqueue_transfers') return args.videos.map(video=>({id:'download-fixture',video,status:'done',received:video.size,total:video.size}));
+        if (command === 'record_client_event') return;
+        if (command === 'check_recorder_connection') return { connected: true };
+        if (command === 'get_settings') return mock.settings;
+        if (command === 'save_settings') return mock.settings = args.settings;
+        if (command === 'rename_app') {localStorage.setItem('fixture-display-name',args.name);return mock.settings={...mock.settings,displayName:args.name};}
+        if (command === 'share_saved_many') return;
+        if (command === 'rename_saved') {const changed={...mock.saved.find(v=>v.id===args.id),name:args.name};mock.saved=mock.saved.map(v=>v.id===args.id?changed:v);return changed;}
+        if (command === 'choose_download_directory') return mock.settings = { ...mock.settings, saveMode: 'folder', directory: '/fixture/export', directoryLabel: '测试保存目录' };
+        if (command === 'discover_recorder' || command === 'probe_recorder') return recorder;
+        if (command === 'get_recorder_network') return { available: true, selected: { ip: '192.168.43.20', prefixLength: 24 }, bound: true };
+        if (command === 'get_connection_diagnostics') return { method: 'mock', result: 'success', events: [] };
+        if (command === 'list_videos') return { videos: args.category === 'normal' ? [video] : [], warning: null };
+        if (command === 'video_metadata') return { duration: 12, thumbnail: '/fixture-thumbnail.png', warning: null };
+        if (command === 'open_media') return { url: '/fixture-drive.mp4', nativeUrl: '', live: false, size: 3145728 };
+        if (command === 'recorder_status') return {fields:{'Camera.Menu.CardInfo.LifeTimeTotal':'58.1G','Camera.Menu.CardInfo.RemainLifeTime':'19.4G','Camera.Menu.FWversion':'0001',MCUversion:'2026.10','Camera.Menu.SD0':'READY','Camera.Preview.MJPEG.status.record':'Recording',mic:'OFF'},warnings:[]};
+        if (command === 'recorder_command') return;
+        if (command === 'export_video') { const result = { ...video, id: 'export:fixture', savedPath: '/fixture/export.mp4', storage:'gallery', size:524288, duration: args.end - args.start }; mock.saved.push(result); return result; }
+        if (command === 'export_saved') return { ...mock.saved[0], exportedPath: 'content://fixture/export' };
+        if (command === 'delete_saved') { mock.saved = []; return; }
+        if (command === 'cancel_recorder_discovery' || command === 'release_recorder_network') return;
+        throw new Error('Unexpected mocked command: ' + command);
+      }
+    };
+  });
+  await page.route('**/fixture-drive.mp4',route=>{const data=fs.readFileSync('tools/fixtures/drive.mp4');const range=route.request().headers()['range'];if(!range)return route.fulfill({body:data,contentType:'video/mp4',headers:{'Accept-Ranges':'bytes'}});const [,lo,hi]=/bytes=(\d+)-(\d*)/.exec(range);const start=Number(lo),end=hi?Number(hi):data.length-1;return route.fulfill({status:206,body:data.subarray(start,end+1),contentType:'video/mp4',headers:{'Accept-Ranges':'bytes','Content-Range':`bytes ${start}-${end}/${data.length}`}});});
+  await page.route('**/fixture-thumbnail.png',route=>route.fulfill({path:'tools/fixtures/thumbnail.png',contentType:'image/png'}));
+ await page.goto('http://127.0.0.1:1420');
+  await page.locator('.glacier-connection-state.online').waitFor();
+  assert.equal(await page.title(),'吉行影记');checks.push('legacy default brand updates to 吉行影记');
+  await page.getByRole('button',{name:'修改记录仪标题',exact:true}).click();await page.getByRole('button',{name:'修改软件名称',exact:true}).click();
+  const nameDialog=page.getByRole('dialog',{name:'修改应用名称',exact:true});await nameDialog.getByLabel('应用名称',{exact:true}).fill('小雷的星越 L');await nameDialog.getByRole('button',{name:'保存名称',exact:true}).click();
+  await page.reload();await page.locator('.glacier-connection-state.online').waitFor();assert.equal(await page.title(),'小雷的星越 L');checks.push('custom name persists after reopening');
+  assert.equal(await page.locator('.topbar img,.sidebar .brand img').count(),0);checks.push('app logo removed from the top left of the interface');
+  await page.locator('.glacier-connect-button').click();
+  await page.getByRole('img', { name: '录像封面' }).waitFor();
+  await page.locator('.video-duration').filter({ hasText: '00:12' }).waitFor(); checks.push('lazy thumbnail and duration');
+  await page.setViewportSize({width:1280,height:850});assert.equal(await page.getByRole('button',{name:'录像文件操作',exact:true}).isVisible(),true);checks.push('file menu available on desktop');
+  await page.getByRole('button',{name:'录像文件操作',exact:true}).click();
+  const fileMenu=page.getByRole('dialog',{name:'录像文件操作',exact:true});await fileMenu.waitFor();assert.equal(await page.getByRole('dialog',{name:'录像播放器',exact:true}).count(),0);
+  await fileMenu.getByRole('button',{name:'关闭录像菜单',exact:true}).click();checks.push('card more opens file operations without playback');
+  await page.setViewportSize({width:390,height:844});await page.locator('.video-category-inline').click();
+  let dialog = page.getByRole('dialog', { name: '录像播放器', exact: true });
+  await page.waitForFunction(() => document.querySelector('.custom-player-stage video')?.readyState >= 2);
+  assert.equal(await dialog.locator('video').getAttribute('controls'), null); checks.push('custom controls without browser controls');
+  assert.equal((await dialog.getAttribute('class')).includes('player-expanded'),false);assert.equal(await page.evaluate(()=>document.fullscreenElement),null);assert.equal(await dialog.getByRole('button',{name:'放大画面',exact:true}).count(),0);checks.push('card opens ordinary playback without entering fullscreen');
+  assert.equal(await dialog.getByRole('button',{name:'截取与打码',exact:true}).count(),0);checks.push('clip and mask entry lives only in file drawer');
+  const layout=await dialog.evaluate(node=>{const center=el=>{const r=el.getBoundingClientRect();return r.left+r.width/2;};return {dialog:center(node),play:center(node.querySelector('.player-play-button')),preferences:center(node.querySelector('.player-preferences')),view:center(node.querySelector('.player-view-controls'))};});assert.ok(Math.abs(layout.dialog-layout.play)<1);assert.ok(layout.preferences<layout.play&&layout.view>layout.play);checks.push('play pause centered with volume and speed on the left');
+  await dialog.getByRole('button',{name:'播放速度',exact:true}).click();await dialog.getByRole('button',{name:'4×',exact:true}).click();assert.equal(await dialog.locator('video').evaluate(video=>video.playbackRate),4);assert.equal(await dialog.getByRole('button',{name:'停止',exact:true}).count(),0);await dialog.getByRole('button',{name:'1.5×',exact:true}).click();await dialog.getByRole('button',{name:'播放速度',exact:true}).click(); assert.equal(await dialog.locator('video').evaluate(video => video.playbackRate), 1.5); checks.push('playback speed supports up to 4x');
+  await dialog.getByRole('button', { name: '静音', exact: true }).click(); assert.equal(await dialog.locator('video').evaluate(video => video.volume), 0); checks.push('mute');await dialog.getByRole('button',{name:'取消静音',exact:true}).click();
+  await dialog.getByRole('slider', { name: '播放进度', exact: true }).focus(); await page.keyboard.press('Home'); await page.keyboard.press('ArrowRight');
+  await page.waitForFunction(()=>document.querySelector('.custom-player-stage video')?.currentTime>=.09);checks.push('seek');
+  await dialog.getByRole('button', { name: '全屏', exact: true }).click(); assert.ok((await dialog.getAttribute('class')).includes('player-expanded'));
+  assert.equal(await dialog.locator('.custom-player-heading').isVisible(),false);
+  assert.equal(await page.evaluate(()=>document.fullscreenElement?.classList.contains('custom-player-stage')),true);
+  const fullRect=await dialog.locator('.custom-player-stage').evaluate(stage=>{const r=stage.getBoundingClientRect();return {width:r.width,height:r.height,viewportWidth:innerWidth,viewportHeight:innerHeight};});
+  assert.equal(fullRect.width,fullRect.viewportWidth);assert.equal(fullRect.height,fullRect.viewportHeight);
+  const row=await dialog.locator('.fullscreen-overlay-controls').evaluate(node=>{const r=node.querySelector('.fullscreen-timeline').getBoundingClientRect();return {text:[...node.querySelectorAll('button')].map(b=>b.textContent),y:[...node.querySelectorAll('button')].map(b=>{const p=b.getBoundingClientRect();return p.y+p.height/2;}),timelineY:r.y+r.height/2};});assert.ok(row.text.every(text=>text===''));assert.ok(row.y.every(y=>Math.abs(y-row.timelineY)<2));checks.push('fullscreen icons and progress slider share one row');
+  await dialog.locator('.custom-player-stage').click({position:{x:190,y:200}});await page.waitForFunction(()=>!document.querySelector('.fullscreen-overlay-controls').classList.contains('visible'));await dialog.locator('.custom-player-stage').click({position:{x:190,y:200}});await page.waitForFunction(()=>document.querySelector('.fullscreen-overlay-controls').classList.contains('visible'));checks.push('successive picture taps hide and show the fullscreen row');
+  await dialog.locator('.fullscreen-overlay-controls').getByRole('button',{name:'暂停',exact:true}).click();
+  assert.equal(await dialog.locator('video').evaluate(v=>v.paused),true);
+  await dialog.locator('video').evaluate(v=>v.currentTime=3);
+  const cdp=await page.context().newCDPSession(page);
+  async function drag(from,to){await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[from]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[to]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
+  await drag({x:100,y:410},{x:190,y:410});await page.waitForTimeout(120);
+  assert.ok(await dialog.locator('video').evaluate(v=>v.currentTime>5&&v.currentTime<7));checks.push('horizontal touch gesture seeks relative to starting time');
+  await drag({x:80,y:410},{x:80,y:550});assert.ok(await dialog.locator('video').evaluate(v=>Number(getComputedStyle(v).filter.match(/[\d.]+/)[0])<.9));checks.push('left vertical gesture adjusts picture brightness');
+  await drag({x:300,y:410},{x:300,y:550});assert.ok(await dialog.locator('video').evaluate(v=>v.volume<.9&&v.volume>.5));checks.push('right vertical gesture adjusts volume');
+  await page.getByText(/^音量 \d+%$/).waitFor();
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:140,y:410},{x:250,y:410}]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:80,y:410},{x:310,y:410}]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  assert.ok(await dialog.locator('video').evaluate(v=>new DOMMatrix(getComputedStyle(v).transform).a>1.8));
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:180,y:410}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:230,y:410}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  assert.ok(await dialog.locator('video').evaluate(v=>new DOMMatrix(getComputedStyle(v).transform).e>20));checks.push('pinch zoom and drag the enlarged picture');
+  await dialog.locator('.custom-player-stage').dblclick({position:{x:195,y:410}});assert.equal(await dialog.locator('video').evaluate(v=>new DOMMatrix(getComputedStyle(v).transform).a),1);checks.push('double tap resets the picture');
+  assert.equal(await dialog.locator('.fullscreen-overlay-controls').getByRole('button',{name:'停止',exact:true}).count(),0);checks.push('fullscreen stop button removed');
+  await page.screenshot({path:'analysis/player-fullscreen-0.8.5-mobile.png'});
+  await dialog.locator('.fullscreen-overlay-controls').getByRole('button',{name:'播放',exact:true}).click();assert.equal(await dialog.locator('video').evaluate(v=>v.paused),false);checks.push('fullscreen has explicit play pause and exit buttons');
+  await page.waitForTimeout(3200);assert.equal(await dialog.locator('.fullscreen-overlay-controls').evaluate(node=>getComputedStyle(node).opacity),'0');checks.push('fullscreen controls hide automatically');
+  await dialog.locator('.custom-player-stage').click({position:{x:190,y:180}});
+  await dialog.getByRole('button', { name: '退出全屏', exact: true }).click(); await page.waitForFunction(()=>getComputedStyle(document.querySelector('.custom-player-stage video')).filter==='brightness(1)');checks.push('exit fullscreen button restores ordinary player and brightness');
+  await dialog.getByText('3.0 MB',{exact:true}).waitFor(); checks.push('reads actual size when directory size is missing');
+  await dialog.getByRole('button',{name:'保存到相册',exact:true}).click();
+  await dialog.locator('.player-toast').filter({hasText:'已开始下载'}).waitFor(); checks.push('download toast visible above the modal');
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false); checks.push('mobile layout');
+  await dialog.screenshot({ path: 'analysis/player-redesign-mobile.png' });
+  await dialog.getByRole('button',{name:'录像文件操作',exact:true}).click();const clipDrawer=page.getByRole('dialog',{name:'录像文件操作',exact:true});await clipDrawer.getByRole('button',{name:'截取与打码',exact:true}).click();dialog=page.getByRole('dialog',{name:'录像播放器',exact:true});assert.equal((await dialog.getAttribute('class')).includes('player-expanded'),false);checks.push('drawer opens clip editor in ordinary view');
+  await dialog.getByRole('checkbox', { name: '只导出选中片段' }).check();
+  await dialog.getByLabel('开始（秒）').fill('2'); await dialog.getByLabel('结束（秒）').fill('6');
+  await dialog.getByRole('checkbox', { name: '遮挡车架号水印' }).check();assert.equal(await dialog.locator('.mask-preview>span').evaluate(node=>getComputedStyle(node).backgroundColor),'rgb(0, 0, 0)');assert.equal(await dialog.locator('.mask-preview>span').evaluate(node=>getComputedStyle(node).opacity),'1');checks.push('VIN preview is fully opaque through the right edge');
+  await dialog.getByRole('button', { name: '导出打码录像' }).click();
+  await page.waitForFunction(() => mediaMock.calls.some(call => call.command === 'export_video'));
+  const exported = await page.evaluate(() => mediaMock.calls.find(call => call.command === 'export_video').args);
+  assert.equal(exported.start, 2); assert.equal(exported.end, 6); assert.ok(exported.mask.width > 0);assert.equal(exported.mask.x+exported.mask.width,1);assert.equal(exported.mask.y,0); checks.push('clip and mask export request');
+  await page.waitForTimeout(150);
+  if(await page.getByRole('button',{name:'退出全屏',exact:true}).isVisible())await page.getByRole('button',{name:'退出全屏',exact:true}).click();
+  await page.getByRole('button', { name: '关闭播放器', exact: true }).click();
+  await page.locator('.filter-tabs button').filter({hasText:'已保存'}).click();await page.getByRole('button',{name:'录像文件操作',exact:true}).click();
+  const savedMenu=page.getByRole('dialog',{name:'录像文件操作',exact:true});assert.equal(await page.getByRole('dialog',{name:'录像播放器',exact:true}).count(),0);
+  await savedMenu.getByRole('button',{name:'打开文件位置',exact:true}).click();assert.ok(await page.evaluate(()=>mediaMock.calls.some(c=>c.command==='share_saved_many')));checks.push('share moved to the file drawer');
+  await savedMenu.getByRole('button',{name:'重命名',exact:true}).click();await savedMenu.getByLabel('录像文件名',{exact:true}).fill('沿途风景.mp4');await savedMenu.getByRole('button',{name:'保存名称',exact:true}).click();await savedMenu.getByRole('heading',{name:'沿途风景.mp4',exact:true}).waitFor();checks.push('rename saved file from drawer');
+  await savedMenu.screenshot({path:'analysis/file-drawer-0.6.0-mobile.png'});
+  await savedMenu.getByRole('button',{name:'删除录像文件',exact:true}).click();await savedMenu.getByText('会从系统相册中删除该文件。记录仪原片保留。',{exact:true}).waitFor();await savedMenu.getByRole('button',{name:'确认删除文件',exact:true}).click();await savedMenu.waitFor({state:'detached'});assert.equal(await page.evaluate(()=>mediaMock.saved.length),0);checks.push('file deletion clearly deletes gallery file and requires confirmation');
+  await page.locator('.nav-item').filter({ hasText: '设置与帮助' }).click();
+  await page.getByText('系统相册',{exact:true}).waitFor();assert.equal(await page.getByLabel('下载保存方式').count(),0);assert.equal(await page.getByRole('button',{name:'选择目录',exact:true}).count(),0);checks.push('downloads have one fixed system gallery destination');
+  assert.equal(await page.getByRole('checkbox',{name:'播放时保持屏幕常亮',exact:true}).count(),0);assert.equal(await page.getByText(/Tauri|React/).count(),0);checks.push('screen-on option and stack labels removed');
+  for(const text of ['58.1 GB','19.4 GB','2026.10'])await page.locator('.device-status-grid').getByText(text,{exact:true}).waitFor();await page.getByText('存储卡状态：正常',{exact:true}).waitFor();checks.push('screenshot storage fields and MCUversion are shown correctly');
+  await page.getByRole('button', { name: '格式化', exact: true }).click();
+  const format = page.getByRole('dialog', { name: '确认格式化存储卡', exact: true });
+  assert.equal(await format.getByRole('button', { name: '确认格式化', exact: true }).isEnabled(), false);
+  await format.getByLabel('确认已备份').check(); await format.getByLabel('格式化确认文字').fill('清空');
+  assert.equal(await format.getByRole('button', { name: '确认格式化', exact: true }).isEnabled(), true);
+  await format.getByRole('button', { name: '取消格式化' }).click();
+  assert.equal(await page.evaluate(() => mediaMock.calls.some(call => call.command === 'recorder_command' && call.args.command === 'format')), false); checks.push('format confirmation guard');
+  await page.screenshot({ path: 'analysis/settings-0.8.5-mobile.png', fullPage: true });
+  assert.deepEqual(errors, []);
+  fs.writeFileSync('analysis/media-ui-verification.json', JSON.stringify({ mockedRecorder: true, realVideoDecoding: true, checks, errors }, null, 2));
+  await browser.close(); console.log(JSON.stringify({ passed: checks.length, checks }));
+})().catch(error => { console.error(error); process.exit(1); });

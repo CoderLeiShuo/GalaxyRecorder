@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 use std::net::Ipv4Addr;
-#[cfg(target_os = "android")]
-use tauri::Manager;
 use tauri::{
     plugin::{Builder, TauriPlugin},
     AppHandle, Runtime,
 };
+#[cfg(target_os = "android")]
+use tauri::{Emitter, Manager};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -15,6 +16,8 @@ pub struct WifiLink {
     pub ip: String,
     pub prefix_length: u8,
     pub gateway: Option<String>,
+    #[serde(default)]
+    pub fingerprint: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -36,10 +39,31 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("recorder-network")
         .setup(|app, api| {
             #[cfg(target_os = "android")]
-            app.manage(MobileNetwork(api.register_android_plugin(
-                "com.leishuo.galaxyrecorder",
-                "RecorderNetworkPlugin",
-            )?));
+            {
+                let plugin = api.register_android_plugin(
+                    "com.leishuo.galaxyrecorder",
+                    "RecorderNetworkPlugin",
+                )?;
+                let emitter = app.clone();
+                let handler = tauri::ipc::Channel::<serde_json::Value>::new(move |body| {
+                    if let tauri::ipc::InvokeResponseBody::Json(json) = body {
+                        if let Ok(value) = serde_json::from_str::<serde_json::Value>(&json) {
+                            let _ = emitter.emit("recorder-network", value);
+                        }
+                    }
+                    Ok(())
+                });
+                let listener = plugin.clone();
+                tauri::async_runtime::spawn(async move {
+                    let _: Result<serde_json::Value, _> = listener
+                        .run_mobile_plugin_async(
+                            "registerListener",
+                            serde_json::json!({"event":"network","handler":handler}),
+                        )
+                        .await;
+                });
+                app.manage(MobileNetwork(plugin));
+            }
             #[cfg(not(target_os = "android"))]
             let _ = (app, api);
             Ok(())
@@ -64,11 +88,16 @@ async fn mobile_call<T: serde::de::DeserializeOwned>(
 }
 
 pub async fn inspect(app: &AppHandle) -> Result<NetworkInfo, String> {
+    #[cfg(target_os = "ios")]
+    {
+        serde_json::from_value(crate::mobile::call(app, "network", serde_json::json!({})).await?)
+            .map_err(|e| e.to_string())
+    }
     #[cfg(target_os = "android")]
     {
         mobile_call(app, "inspect", serde_json::json!({})).await
     }
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
     {
         let _ = app;
         desktop_info()
@@ -76,10 +105,15 @@ pub async fn inspect(app: &AppHandle) -> Result<NetworkInfo, String> {
 }
 
 pub async fn prepare(app: &AppHandle, multicast: bool) -> Result<NetworkInfo, String> {
+    #[cfg(target_os = "ios")]
+    let info = {
+        let _ = multicast;
+        inspect(app).await?
+    };
     #[cfg(target_os = "android")]
     let info: NetworkInfo =
         mobile_call(app, "prepare", serde_json::json!({"multicast":multicast})).await?;
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
     let info = {
         let _ = (app, multicast);
         desktop_info()?
@@ -114,7 +148,7 @@ pub async fn release(app: &AppHandle) -> Result<(), String> {
     Ok(())
 }
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 fn desktop_info() -> Result<NetworkInfo, String> {
     let socket = std::net::UdpSocket::bind("0.0.0.0:0").map_err(|e| e.to_string())?;
     socket
@@ -125,13 +159,16 @@ fn desktop_info() -> Result<NetworkInfo, String> {
         .map_err(|e| e.to_string())?
         .ip()
         .to_string();
-    let available = ip.parse::<Ipv4Addr>().is_ok_and(|ip| ip.is_private());
+    let available = ip.parse::<Ipv4Addr>().is_ok_and(|ip| {
+        ip.is_private() || matches!(ip.octets(), [193, 168, 0, _] | [192, 72, 1, _])
+    });
     let selected = available.then(|| WifiLink {
         id: "system-route".into(),
         interface_name: "system".into(),
         ip,
         prefix_length: 24,
         gateway: None,
+        fingerprint: None,
     });
     Ok(NetworkInfo {
         platform: "desktop".into(),

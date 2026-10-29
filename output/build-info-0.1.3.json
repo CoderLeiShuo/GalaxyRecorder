@@ -1,0 +1,29 @@
+{
+  "File": "galaxy-recorder-0.1.3-video-fix-arm64-test.apk",
+  "Version": "0.1.3",
+  "VersionCode": 1003,
+  "BuiltAt": "2026-10-27T18:30:49+08:00",
+  "Stack": "Tauri 2 + React + TypeScript + Rust",
+  "Bytes": 17301997,
+  "MiB": 16.5,
+  "SHA256": "EBB21A4511106C1718C75612CF6FF5B2C27BB0373A4CDBE737D9DFA5757BF91D",
+  "SignatureVerified": true,
+  "SigningCertificateSHA256": "c05531d9229ed474d85cbb2c32f8bfe8ee775a5e3711c448315490a3ce345c0e",
+  "SignatureCompatibleWith012": false,
+  "Installed": false,
+  "LaunchVerified": false,
+  "PhoneWifiSelfCheckVerified": false,
+  "VehicleVerified": false,
+  "Tests": {
+    "Rust": 25,
+    "Frontend": 7,
+    "FrontendProductionBuild": true,
+    "AndroidReleaseBuild": true,
+    "PackagedNativeMatchesBuild": true,
+    "PackagedFrontendMatchesBuild": true
+  },
+  "Notes": [
+    "本机测试签名与 0.1.2 不同，不能直接覆盖安装；先备份应用中已保存的录像，再卸载旧测试版安装。",
+    "尚未进行实车验证。"
+  ]
+}

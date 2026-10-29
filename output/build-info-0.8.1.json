@@ -1,0 +1,120 @@
+{
+  "File": "jixing-yingji-0.8.1-fixes-arm64-test.apk",
+  "Version": "0.8.1",
+  "VersionCode": 8001,
+  "BuiltAt": "2026-10-28T15:21:58+08:00",
+  "Stack": "Tauri 2 + React + TypeScript + Rust; Android capabilities through Kotlin plugins",
+  "ConnectionProfiles": [
+    "AUTO",
+    "A7",
+    "E5",
+    "L6",
+    "GENERIC1",
+    "GENERIC2",
+    "GENERIC3"
+  ],
+  "Bytes": 12834704,
+  "MiB": 12.24,
+  "SHA256": "936C75C8F21C97D68D8F0DBA24C0DB5BED7FDF83F6887BDC7B4058A5D292B392",
+  "SignatureVerified": true,
+  "SigningCertificateSHA256": "c05531d9229ed474d85cbb2c32f8bfe8ee775a5e3711c448315490a3ce345c0e",
+  "SignatureCompatibleWith060": true,
+  "SignatureCompatibleWith050": true,
+  "SignatureCompatibleWith040": true,
+  "SignatureCompatibleWith030": true,
+  "SignatureCompatibleWith021": true,
+  "SignatureCompatibleWith020": true,
+  "SignatureCompatibleWith013": true,
+  "SignatureCompatibleWith012": false,
+  "Installed": false,
+  "LaunchVerified": false,
+  "VehicleVerified": false,
+  "NativeWifiSearchRuntimeVerified": false,
+  "VehicleInformationRuntimeVerified": false,
+  "L6PrivateLivePreviewImplemented": false,
+  "OriginalApkSHA256": "0e737970e57c16dce6a70eac673d089d99609aebc98bdd8846175bd16c4e4371",
+  "Tests": {
+    "Rust": 70,
+    "Frontend": 36,
+    "AndroidJVM": 21,
+    "MediaUI": 37,
+    "NativePlayerUIBridge": 9,
+    "ConnectionStateUI": 11,
+    "WorkflowsUI": 13,
+    "VehicleAndSchemesUI": 19,
+    "TotalChecks": 216,
+    "MockedRecorderInUI": true,
+    "MockedAndroidSystemCallsInUI": true,
+    "RealLocalProtocolHTTPFixtures": true,
+    "FrontendProductionBuild": true,
+    "AndroidReleaseBuild": true,
+    "PackagedNativeMatchesBuild": true,
+    "PackagedFrontendMatchesBuild": true,
+    "NativeWifiSearchPresentInDex": true
+  },
+  "Notes": [
+    "Screenshot CardInfo G units and SD0 READY parsed independently of category usage counters; MCUversion aliases and read-only queries added.",
+    "Combined vehicle/app title; model, year and configuration use compact labels; default recorder image and logo preserved.",
+    "Android and browser fullscreen controls use a single icon/slider row; successive picture taps toggle visibility.",
+    "New downloads always save to system gallery; playback always keeps screen on. Old settings migrate without moving saved files.",
+    "Default VIN mask covers the upper right edge with opaque black and outward pixel rounding. Android exports decode beginning, middle and end frames and refuse publication if the mask is not opaque.",
+    "Old masked videos require re-export; existing user files were not rewritten.",
+    "Context menus and WebView long-press menus disabled; stack labels removed from product UI.",
+    "216 unit/UI checks plus actual desktop H264 pixel checks passed. Android system/UI calls are mocked; native GPU masking, fullscreen touch and live controller query still need phone/vehicle acceptance.",
+    "APK signature, CRC, 16 KB ZIP and ELF alignment, native byte match, frontend build fingerprint and plugin callback strings verified.",
+    "See analysis/FEEDBACK-0.8.1.md."
+  ],
+  "ProductName": "吉行影记",
+  "PreviousProductName": "银河记录仪",
+  "PreviousBytes": 19884384,
+  "PreviousMiB": 18.96,
+  "ReductionBytes": 7049680,
+  "ReductionPercent": 35.45,
+  "SignatureCompatibleWith070": true,
+  "NativeLibraryBytes": 10299648,
+  "NativeLibrarySHA256": "18c8ec779ddc901aadc97b39d75da37cf448cf8406266c18df1e7f5c984d0a3c",
+  "NativeLibraryCompressed": false,
+  "ElfLoadAlignment": [
+    16384,
+    16384,
+    16384,
+    16384
+  ],
+  "ZipAlignment16KBVerified": true,
+  "NameVerifiedInManifest": true,
+  "PluginCallbacksPreservedInDex": [
+    "RecorderMediaPlugin",
+    "RecorderNetworkPlugin",
+    "directoryResult",
+    "scanResult",
+    "imageResult",
+    "permissionResult",
+    "searchRecorderWifi"
+  ],
+  "ArchiveBreakdown": {
+    "Other": {
+      "Bytes": 103804,
+      "CompressedBytes": 32268
+    },
+    "Dex": {
+      "Bytes": 3009604,
+      "CompressedBytes": 1534953
+    },
+    "Native": {
+      "Bytes": 10299648,
+      "CompressedBytes": 10299648
+    },
+    "AndroidResources": {
+      "Bytes": 1127131,
+      "CompressedBytes": 871937
+    }
+  },
+  "SizeBaselineVersion": "0.7.0",
+  "PreviousReleaseVersion": "0.8.0",
+  "PreviousReleaseBytes": 12833784,
+  "SignatureCompatibleWith080": true,
+  "ControllerVersionRuntimeVerified": false,
+  "NativeMaskRuntimeVerified": false,
+  "NativeFullscreenControlsRuntimeVerified": false,
+  "ActualDesktopMaskDecodedFrames": 3
+}

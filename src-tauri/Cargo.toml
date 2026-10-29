@@ -1,7 +1,7 @@
 [package]
 name = "galaxy-recorder"
-version = "0.1.2"
-description = "Galaxy Recorder for desktop and mobile"
+version = "0.8.5"
+description = "Ji Xing Ying Ji dashcam companion for desktop and mobile"
 edition = "2021"
 
 [lib]
@@ -10,6 +10,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
+tauri-utils = { version = "2", features = ["build"] }
 
 [dependencies]
 tauri = { version = "2", features = ["protocol-asset"] }
@@ -17,12 +18,24 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
-tokio = { version = "1", features = ["fs", "io-util", "sync", "time", "macros", "net", "rt-multi-thread"] }
+tokio = { version = "1", features = ["fs", "io-util", "sync", "time", "macros", "net", "rt-multi-thread", "process"] }
 socket2 = "0.6"
 quick-xml = "0.38"
 futures-util = "0.3"
+axum = "0.8"
+base64 = "0.22"
+uuid = { version = "1", features = ["v4"] }
+tokio-util = { version = "0.7", features = ["io"] }
+tauri-plugin-dialog = "2"
 
 [profile.release]
+# Prefer a smaller release binary; video decoding stays in the Android media engine.
+opt-level = "s"
+panic = "abort"
 lto = true
 codegen-units = 1
 strip = true
+
+[patch.crates-io]
+# Avoid iOS runtime crashes during NSBundle identifier enumeration; see vendor/wry/PATCH.md.
+wry = { path = "vendor/wry" }

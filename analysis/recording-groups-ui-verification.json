@@ -1,0 +1,22 @@
+{
+  "mockedRecorder": true,
+  "checks": [
+    "top-left interface logo is removed",
+    "device header and title have added top spacing",
+    "device footer reconnect caption is removed",
+    "first page contains 60 clips and shows the full date-group count",
+    "pagination preserves newest-first dates and places undated clips in their own group",
+    "clips within each date remain newest-first",
+    "emergency filter keeps separate date groups",
+    "list view keeps date-group boundaries",
+    "batch selection works across dates",
+    "global selection can clear clips in every group",
+    "saved clips are grouped by recording date",
+    "date filter shows only its matching group",
+    "search combines with date filter without empty groups",
+    "empty search removes all date headings",
+    "date groups fit mobile and desktop widths",
+    "settings removes the Wi-Fi header button and retains connection management"
+  ],
+  "errors": []
+}

@@ -1,11 +1,12 @@
 use crate::{
     network::{self, NetworkInfo},
-    protocol::{a7_probe_accepted, authority, heartbeat_address, same_subnet, subnet_hosts},
+    protocol::{authority, heartbeat_address, same_subnet, subnet_hosts},
 };
 use futures_util::{stream, StreamExt};
 use reqwest::{Client, Url};
 use serde::Serialize;
 use socket2::{Domain, Protocol, Socket, Type};
+use std::collections::{BTreeMap, HashMap};
 use std::{
     collections::HashSet,
     net::{Ipv4Addr, SocketAddrV4},
@@ -26,6 +27,12 @@ pub struct Recorder {
     pub firmware: String,
     pub vehicle: String,
     pub discovered_via: String,
+    pub network_id: Option<String>,
+    pub profile: String,
+    pub device_key: String,
+    pub vehicle_info: Option<crate::vehicle::VehicleInfo>,
+    #[serde(skip)]
+    pub fields: BTreeMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -58,12 +65,16 @@ pub struct ConnectionState {
     trace: Mutex<Trace>,
     generation: AtomicU64,
     pub operation: tokio::sync::Mutex<()>,
+    selected_profile: Mutex<String>,
+    devices: Mutex<HashMap<String, Recorder>>,
 }
 
 impl Default for ConnectionState {
     fn default() -> Self {
         Self {
             generation: AtomicU64::new(0),
+            selected_profile: Mutex::new("AUTO".into()),
+            devices: Mutex::new(HashMap::new()),
             operation: tokio::sync::Mutex::new(()),
             trace: Mutex::new(Trace {
                 started: Instant::now(),
@@ -83,6 +94,26 @@ impl Default for ConnectionState {
 }
 
 impl ConnectionState {
+    pub fn set_profile(&self, profile: Option<&str>) -> Result<(), String> {
+        *self.selected_profile.lock().map_err(|_| "连接配置不可用")? =
+            crate::adapters::profile(profile)?.into();
+        Ok(())
+    }
+    pub fn profile(&self) -> String {
+        self.selected_profile
+            .lock()
+            .map(|p| p.clone())
+            .unwrap_or_else(|_| "AUTO".into())
+    }
+    pub fn recorder(&self, address: &str) -> Option<Recorder> {
+        self.devices.lock().ok()?.get(address).cloned()
+    }
+    pub fn family(&self, address: &str) -> String {
+        self.recorder(address)
+            .map(|r| r.profile)
+            .unwrap_or_else(|| "A7".into())
+    }
+
     pub fn begin(&self, method: &str) -> u64 {
         let generation = self.generation.fetch_add(1, Ordering::SeqCst) + 1;
         if let Ok(mut trace) = self.trace.lock() {
@@ -107,11 +138,13 @@ impl ConnectionState {
         self.generation.load(Ordering::SeqCst) != generation
     }
     pub fn log(&self, stage: &str, message: impl Into<String>) {
+        let message = message.into();
+        crate::journal::record(stage, &message);
         if let Ok(mut trace) = self.trace.lock() {
             let event = DiagnosticEvent {
                 elapsed_ms: trace.started.elapsed().as_millis(),
                 stage: stage.into(),
-                message: message.into(),
+                message,
             };
             if trace.snapshot.events.len() == 80 {
                 trace.snapshot.events.remove(0);
@@ -143,7 +176,7 @@ impl ConnectionState {
             trace.snapshot.total = total;
             let checked = trace.snapshot.checked;
             if checked % 16 == 0 || checked == total {
-                let _ = app.emit("connection-progress", serde_json::json!({"checked":checked,"total":total,"message":format!("正在查找记录仪，已检查 {checked}/{total} 个地址…")}));
+                let _ = app.emit("connection-progress", serde_json::json!({"checked":checked,"total":total,"message":"正在连接记录仪，请稍候…"}));
             }
         }
     }
@@ -167,7 +200,7 @@ pub fn client() -> Result<Client, String> {
         .redirect(reqwest::redirect::Policy::none())
         .connect_timeout(Duration::from_secs(4))
         .read_timeout(Duration::from_secs(15))
-        .user_agent("GalaxyRecorder/0.1.2")
+        .user_agent(concat!("GalaxyRecorder/", env!("CARGO_PKG_VERSION")))
         .build()
         .map_err(|e| e.to_string())
 }
@@ -184,7 +217,10 @@ pub fn endpoint(address: &str, action: &str, property: &str) -> Result<Url, Stri
     Ok(url)
 }
 
-async fn response_text(mut response: reqwest::Response, limit: usize) -> Result<String, String> {
+pub(crate) async fn response_text(
+    mut response: reqwest::Response,
+    limit: usize,
+) -> Result<String, String> {
     let mut bytes = Vec::new();
     while let Some(chunk) = response.chunk().await.map_err(|e| e.to_string())? {
         if bytes.len() + chunk.len() > limit {
@@ -195,19 +231,7 @@ async fn response_text(mut response: reqwest::Response, limit: usize) -> Result<
     Ok(String::from_utf8_lossy(&bytes).into_owned())
 }
 
-pub async fn text(client: &Client, url: Url, seconds: u64) -> Result<String, String> {
-    let response = client
-        .get(url)
-        .header("Accept-Encoding", "identity")
-        .timeout(Duration::from_secs(seconds))
-        .send()
-        .await
-        .map_err(|e| format!("设备未响应：{e}"))?
-        .error_for_status()
-        .map_err(|e| format!("设备返回错误：{e}"))?;
-    response_text(response, 8 * 1024 * 1024).await
-}
-
+#[cfg(test)]
 async fn probe_response(http: &Client, url: Url, timeout: Duration) -> Result<String, String> {
     let response = http
         .get(url)
@@ -228,7 +252,7 @@ async fn probe_response(http: &Client, url: Url, timeout: Duration) -> Result<St
         return Err(format!("HTTP {}", response.status().as_u16()));
     }
     let body = response_text(response, 65536).await?;
-    if !a7_probe_accepted(&body) {
+    if !crate::protocol::a7_probe_accepted(&body) {
         return Err(format!(
             "HTTP 200，但不是兼容的记录仪响应（{} 字节）",
             body.len()
@@ -237,38 +261,116 @@ async fn probe_response(http: &Client, url: Url, timeout: Duration) -> Result<St
     Ok(body)
 }
 
-async fn probe_with(
-    http: &Client,
+async fn probe_selected(
     address: &str,
+    profile: &str,
     timeout: Duration,
     source: &str,
 ) -> Result<Recorder, String> {
     let address = authority(address)?;
-    let mut reasons = Vec::new();
-    for property in ["DVR", "Camera.Menu.FWversion"] {
-        match probe_response(http, endpoint(&address, "get", property)?, timeout).await {
-            Ok(body) => {
-                let firmware = body
-                    .lines()
-                    .find_map(|line| {
-                        let (key, value) = line.split_once('=')?;
-                        key.to_ascii_lowercase()
-                            .ends_with("fwversion")
-                            .then(|| value.trim().to_string())
-                    })
-                    .unwrap_or_else(|| "待进一步读取".into());
-                return Ok(Recorder {
-                    address,
-                    protocol: "A7 / Config.cgi".into(),
-                    firmware,
-                    vehicle: "2026 款星越 L".into(),
-                    discovered_via: source.into(),
-                });
+    let detection = crate::adapters::probe(&address, profile, timeout).await?;
+    let firmware = detection
+        .fields
+        .iter()
+        .find(|(k, _)| {
+            k.to_ascii_lowercase().ends_with("fwversion") || k.eq_ignore_ascii_case("version")
+        })
+        .map(|(_, v)| v.clone())
+        .unwrap_or_else(|| "设备未提供".into());
+    let vehicle_info = crate::vehicle::info(&detection.fields);
+    Ok(Recorder {
+        address,
+        protocol: format!(
+            "{} / {}",
+            detection.family,
+            if detection.family == "L6" {
+                "Vyou"
+            } else {
+                "Config.cgi"
             }
-            Err(error) => reasons.push(format!("{property}: {error}")),
+        ),
+        firmware,
+        vehicle: vehicle_info
+            .as_ref()
+            .map(|v| v.name.clone())
+            .unwrap_or_else(|| "我的车辆".into()),
+        profile: detection.family,
+        device_key: String::new(),
+        vehicle_info,
+        fields: detection.fields,
+        discovered_via: source.into(),
+        network_id: None,
+    })
+}
+async fn finalize(
+    app: &AppHandle,
+    state: &ConnectionState,
+    mut recorder: Recorder,
+    enrich: bool,
+) -> Result<Recorder, String> {
+    if enrich && recorder.profile == "L6" {
+        crate::adapters::reset_session(&recorder.address).await;
+        crate::adapters::l6_session(&recorder.address).await?;
+    }
+    if enrich && recorder.profile != "L6" {
+        for property in ["Camera.Menu.*", "Camera.Menu.FWversion"] {
+            if let Ok(url) = endpoint(&recorder.address, "get", property) {
+                let response = client()?
+                    .get(url)
+                    .timeout(Duration::from_secs(2))
+                    .send()
+                    .await;
+                if let Ok(response) = response {
+                    if response.status().is_success() {
+                        if let Ok(body) = response_text(response, 128 * 1024).await {
+                            if crate::adapters::accepted_fields(&body) {
+                                recorder.fields.extend(crate::device::fields(&body));
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    Err(reasons.join("；"))
+    let network = state
+        .snapshot()
+        .ok()
+        .and_then(|s| s.network)
+        .and_then(|n| n.selected)
+        .and_then(|n| n.fingerprint);
+    recorder.device_key = crate::vehicle::device_key(
+        &recorder.address,
+        &recorder.profile,
+        &recorder.fields,
+        network.as_deref(),
+    );
+    let memory = crate::settings::remember_device(
+        app,
+        crate::vehicle::DeviceMemory {
+            key: recorder.device_key.clone(),
+            address: recorder.address.clone(),
+            profile: recorder.profile.clone(),
+            vehicle: crate::vehicle::info(&recorder.fields),
+        },
+    )
+    .await?;
+    recorder.vehicle_info = memory.vehicle;
+    recorder.vehicle = recorder
+        .vehicle_info
+        .as_ref()
+        .map(|v| v.name.clone())
+        .unwrap_or_else(|| "我的车辆".into());
+    if let Some((_, firmware)) = recorder.fields.iter().find(|(k, _)| {
+        k.to_ascii_lowercase().ends_with("fwversion") || k.eq_ignore_ascii_case("version")
+    }) {
+        recorder.firmware = firmware.clone();
+    }
+    state
+        .devices
+        .lock()
+        .map_err(|_| "连接会话不可用")?
+        .insert(recorder.address.clone(), recorder.clone());
+    Ok(recorder)
 }
 
 pub async fn connect(
@@ -277,7 +379,8 @@ pub async fn connect(
     address: String,
 ) -> Result<Recorder, String> {
     let _operation = state.operation.lock().await;
-    state.begin("manual");
+    let generation = state.begin("manual");
+    let selected_profile = state.profile();
     let result = async {
         let address = authority(&address)?;
         let info = network::prepare(app, false).await?;
@@ -288,13 +391,35 @@ pub async fn connect(
                 info.bound, info.default_transport
             ),
         );
+        let network_id = info.selected.as_ref().map(|link| link.id.clone());
         state.network(info);
         state.log("http", format!("手动识别 {address}"));
-        probe_with(&client()?, &address, Duration::from_secs(5), "manual")
-            .await
-            .map_err(|error| format!("{address} 连接未完成：{error}"))
+        probe_selected(
+            &address,
+            &selected_profile,
+            Duration::from_secs(3),
+            "manual",
+        )
+        .await
+        .map(|mut recorder| {
+            recorder.network_id = network_id;
+            recorder
+        })
+        .map_err(|error| format!("{address} 连接未完成：{error}"))
     }
     .await;
+    let result = match result {
+        Ok(recorder) if !state.cancelled(generation) => {
+            let value = finalize(app, state, recorder, true).await;
+            if state.cancelled(generation) {
+                Err("连接已取消".into())
+            } else {
+                value
+            }
+        }
+        Ok(_) => Err("连接已取消".into()),
+        Err(error) => Err(error),
+    };
     match &result {
         Ok(recorder) => state.log("connected", format!("已识别 {}", recorder.address)),
         Err(error) => state.log("failed", error),
@@ -319,6 +444,9 @@ fn candidates(
         if let Ok(value) = authority(preferred) {
             add(value);
         }
+    }
+    for address in crate::adapters::FACTORY_ADDRESSES {
+        add(address.to_string());
     }
     let selected = info.selected.as_ref().ok_or("当前 Wi-Fi 没有可用地址")?;
     if let Some(gateway) = &selected.gateway {
@@ -347,6 +475,79 @@ fn candidates(
     Ok(addresses)
 }
 
+#[derive(Serialize)]
+pub struct Health {
+    connected: bool,
+    definitive: bool,
+    reason: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    recorder: Option<Recorder>,
+}
+fn network_issue(info: &NetworkInfo, expected: Option<&str>) -> Option<String> {
+    if !info.available || info.selected.is_none() {
+        return Some("车机 Wi-Fi 已断开，请重新连接记录仪".into());
+    }
+    if info.platform == "android" {
+        if expected.is_some_and(|id| info.selected.as_ref().is_none_or(|link| link.id != id)) {
+            return Some("Wi-Fi 已切换，原记录仪连接已断开".into());
+        }
+        if !info.bound {
+            return Some("记录仪 Wi-Fi 连接已失效，请重新连接".into());
+        }
+    }
+    None
+}
+#[tauri::command]
+pub async fn check_recorder_connection(
+    app: AppHandle,
+    state: tauri::State<'_, ConnectionState>,
+    address: String,
+    network_id: Option<String>,
+    profile: Option<String>,
+) -> Result<Health, String> {
+    let address = authority(&address)?;
+    let info = network::inspect(&app).await?;
+    if let Some(reason) = network_issue(&info, network_id.as_deref()) {
+        state.log("connection-check", &reason);
+        return Ok(Health {
+            connected: false,
+            definitive: true,
+            reason: Some(reason),
+            recorder: None,
+        });
+    }
+    // A health check never selects or binds a new network. A cold process restores the protocol session on this same network.
+    let result = probe_selected(
+        &address,
+        profile.as_deref().unwrap_or(&state.family(&address)),
+        Duration::from_millis(1500),
+        "health-check",
+    )
+    .await;
+    Ok(match result {
+        Ok(recorder) => {
+            let recorder = if let Some(cached) = state.recorder(&address) {
+                cached
+            } else {
+                state.network(info);
+                finalize(&app, &state, recorder, true).await?
+            };
+            Health {
+                connected: true,
+                definitive: false,
+                reason: None,
+                recorder: Some(recorder),
+            }
+        }
+        Err(_) => Health {
+            connected: false,
+            definitive: false,
+            reason: Some("记录仪已失联，请确认车机热点和记录仪已开启".into()),
+            recorder: None,
+        },
+    })
+}
+
 fn udp_socket(port: u16) -> Result<UdpSocket, String> {
     let socket =
         Socket::new(Domain::IPV4, Type::DGRAM, Some(Protocol::UDP)).map_err(|e| e.to_string())?;
@@ -362,8 +563,9 @@ fn udp_socket(port: u16) -> Result<UdpSocket, String> {
 async fn udp_discover(
     port: u16,
     info: &NetworkInfo,
-    http: &Client,
+    _http: &Client,
     state: &ConnectionState,
+    selected_profile: &str,
 ) -> Recorder {
     let socket = match udp_socket(port) {
         Ok(socket) => {
@@ -395,9 +597,9 @@ async fn udp_discover(
             continue;
         }
         state.log("udp", format!("收到 {address} 的设备广播，正在确认协议"));
-        if let Ok(recorder) = probe_with(
-            http,
+        if let Ok(recorder) = probe_selected(
             &address.to_string(),
+            selected_profile,
             Duration::from_millis(900),
             &format!("UDP {port}"),
         )
@@ -405,6 +607,67 @@ async fn udp_discover(
         {
             return recorder;
         }
+    }
+}
+
+async fn l6_discover(
+    port: u16,
+    info: &NetworkInfo,
+    state: &ConnectionState,
+    profile: &str,
+) -> Recorder {
+    if !matches!(crate::adapters::family(profile), "AUTO" | "L6") {
+        return std::future::pending().await;
+    }
+    let local = info
+        .selected
+        .as_ref()
+        .and_then(|n| n.ip.parse::<Ipv4Addr>().ok())
+        .unwrap_or(Ipv4Addr::UNSPECIFIED);
+    let socket = match udp_socket(port) {
+        Ok(socket) => socket,
+        Err(_) => return std::future::pending().await,
+    };
+    let group = Ipv4Addr::new(238, 238, 238, 238);
+    let _ = socket.join_multicast_v4(group, local);
+    let _ = socket.set_multicast_ttl_v4(1);
+    // Replies to the active probe may return to an ephemeral source port.
+    let active = match UdpSocket::bind((local, 0)).await {
+        Ok(socket) => socket,
+        Err(_) => return std::future::pending().await,
+    };
+    let _ = active.set_broadcast(true);
+    let _ = active.set_multicast_ttl_v4(1);
+    for target in [group, Ipv4Addr::BROADCAST] {
+        let _ = active.send_to(b"hello|vyou", (target, 3702)).await;
+    }
+    let mut bytes = [0u8; 4096];
+    let mut active_bytes = [0u8; 4096];
+    loop {
+        let peer = tokio::select! {result=socket.recv_from(&mut bytes)=>result,result=active.recv_from(&mut active_bytes)=>result};
+        let Ok((_, peer)) = peer else { continue };
+        let std::net::IpAddr::V4(ip) = peer.ip() else {
+            continue;
+        };
+        if ip == local
+            || !info.networks.iter().any(|n| {
+                n.ip.parse()
+                    .is_ok_and(|local| same_subnet(ip, local, n.prefix_length))
+            })
+        {
+            continue;
+        }
+        if let Ok(recorder) = probe_selected(
+            &ip.to_string(),
+            profile,
+            Duration::from_millis(900),
+            &format!("Vyou UDP {port}"),
+        )
+        .await
+        {
+            return recorder;
+        }
+        state.log("vyou", "收到设备广播，等待有效协议响应");
     }
 }
 
@@ -416,33 +679,46 @@ pub async fn discover(
 ) -> Result<Recorder, String> {
     let _operation = state.operation.lock().await;
     let generation = state.begin("automatic");
+    let selected_profile = state.profile();
     let result=async {
-        let info=network::prepare(app,true).await?;
+        let mut ready=network::prepare(app,true).await;
+        for delay in [400,1200] {
+            if ready.is_ok(){break;}
+            if state.cancelled(generation){return Err("连接已取消".into());}
+            tokio::time::sleep(Duration::from_millis(delay)).await;
+            ready=network::prepare(app,true).await;
+        }
+        let info=ready?;
         let selected=info.selected.as_ref().ok_or("当前 Wi-Fi 没有可用地址")?;
         state.log("network",format!("使用 Wi-Fi {} /{}，绑定={}，默认网络={}",selected.ip,selected.prefix_length,info.bound,info.default_transport));
         state.network(info.clone());
         let addresses=candidates(&info,preferred.as_deref(),subnet.as_deref())?;
-        let total=addresses.len();
+        let total=addresses.len()*3;
         let http=client()?;
         let scan=async {
-            let mut requests=stream::iter(addresses).map(|address| {
-                let http=&http;
+            for attempt in 0..3 {
+            if attempt>0 {tokio::time::sleep(Duration::from_millis(1200)).await;}
+            let mut requests=stream::iter(addresses.clone()).map(|address| {
                 let preferred=&preferred;
+                let selected_profile=&selected_profile;
                 async move {
-                    let timeout=if preferred.as_ref().is_some_and(|value|authority(value).ok().as_deref()==Some(address.as_str())) {1800} else {450};
-                    let result=probe_with(http,&address,Duration::from_millis(timeout),"HTTP scan").await;
+                    let timeout=if preferred.as_ref().is_some_and(|value|authority(value).ok().as_deref()==Some(address.as_str())) {1800} else {800};
+                    let result=probe_selected(&address,&selected_profile,Duration::from_millis(timeout),"HTTP scan").await;
                     state.progress(app,total);
                     if let Err(error)=&result {state.sample_failure(&address,error);}
                     result.ok()
                 }
             }).buffer_unordered(32);
             while let Some(result)=requests.next().await {if result.is_some(){return result;}}
+            }
             None
         };
-        let first_udp=udp_discover(49142,&info,&http,state);
-        let second_udp=udp_discover(53296,&info,&http,state);
+        let first_udp=udp_discover(49142,&info,&http,state,&selected_profile);
+        let second_udp=udp_discover(53296,&info,&http,state,&selected_profile);
         let cancelled=async {loop {if state.cancelled(generation){break;}tokio::time::sleep(Duration::from_millis(100)).await;}};
-        tokio::pin!(scan,first_udp,second_udp,cancelled);
+        let l6_first=l6_discover(3702,&info,state,&selected_profile);
+        let l6_second=l6_discover(3703,&info,state,&selected_profile);
+        tokio::pin!(scan,first_udp,second_udp,l6_first,l6_second,cancelled);
         let mut http_done=false;
         let deadline=tokio::time::sleep(Duration::from_secs(35));tokio::pin!(deadline);
         loop {
@@ -450,12 +726,29 @@ pub async fn discover(
                 result=&mut scan, if !http_done => {if let Some(recorder)=result{return Ok(recorder);} http_done=true;state.log("http","当前网段已检查完毕，继续等待设备广播");}
                 recorder=&mut first_udp=>return Ok(recorder),
                 recorder=&mut second_udp=>return Ok(recorder),
+                recorder=&mut l6_first=>return Ok(recorder),
+                recorder=&mut l6_second=>return Ok(recorder),
                 _=&mut cancelled=>return Err("查找已取消".into()),
-                _=&mut deadline=>return Err(format!("未找到记录仪，已检查当前 Wi-Fi 的 {total} 个地址。请确认连接的是车机热点，并打开一次车机记录仪应用后重试。")),
+                _=&mut deadline=>return Err("连接未成功，请连接车机热点，并开启车机记录仪后重试。".into()),
             }
         }
-    }.await;
+    }.await.map(|mut recorder: Recorder| {
+        recorder.network_id = state.snapshot().ok().and_then(|trace| trace.network).and_then(|info| info.selected).map(|link| link.id);
+        recorder
+    });
     network::end_discovery(app).await;
+    let result = match result {
+        Ok(recorder) if !state.cancelled(generation) => {
+            let value = finalize(app, state, recorder, true).await;
+            if state.cancelled(generation) {
+                Err("连接已取消".into())
+            } else {
+                value
+            }
+        }
+        Ok(_) => Err("连接已取消".into()),
+        Err(error) => Err(error),
+    };
     match &result {
         Ok(recorder) => state.log(
             "connected",
@@ -475,6 +768,32 @@ mod tests {
     use super::*;
     use crate::network::WifiLink;
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    #[test]
+    fn health_requires_the_same_wifi_but_not_internet_access() {
+        let mut info = NetworkInfo {
+            platform: "android".into(),
+            available: true,
+            bound: true,
+            default_transport: "cellular".into(),
+            selected: Some(WifiLink {
+                id: "car-wifi".into(),
+                interface_name: "wlan0".into(),
+                ip: "192.168.43.20".into(),
+                prefix_length: 24,
+                gateway: None,
+                fingerprint: None,
+            }),
+            networks: vec![],
+            message: String::new(),
+        };
+        assert!(network_issue(&info, Some("car-wifi")).is_none());
+        assert!(network_issue(&info, Some("different-wifi")).is_some());
+        info.bound = false;
+        assert!(network_issue(&info, Some("car-wifi")).is_some());
+        info.available = false;
+        info.selected = None;
+        assert!(network_issue(&info, None).is_some());
+    }
 
     #[test]
     fn candidates_keep_custom_ports_and_cover_real_mask() {
@@ -484,6 +803,7 @@ mod tests {
             ip: "10.205.20.149".into(),
             prefix_length: 23,
             gateway: Some("10.205.20.1".into()),
+            fingerprint: None,
         };
         let info = NetworkInfo {
             platform: "test".into(),

@@ -1,13 +1,27 @@
+mod adapters;
 mod connection;
+mod device;
+mod editing;
+mod journal;
+mod library;
+mod listing;
+mod media;
+mod metadata;
+mod mobile;
 mod network;
 mod protocol;
+mod resume;
+mod settings;
+mod transfers;
+mod vehicle;
 
-use connection::{client, endpoint, text, ConnectionState, Recorder};
-use protocol::{authority, media_path, parse_listing_page, Video};
+use connection::{client, endpoint, response_text, ConnectionState, Recorder};
+use listing::{Listing, PageError};
+use protocol::{authority, video_path, Video};
 use reqwest::Url;
 use serde::Serialize;
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -16,15 +30,15 @@ use std::{
     time::Duration,
 };
 use tauri::{Emitter, Manager, State};
-use tokio::{io::AsyncWriteExt, sync::Mutex};
+use tokio::sync::Mutex;
 
 #[derive(Default)]
-struct Transfers(Mutex<HashMap<String, Arc<AtomicBool>>>);
+pub(crate) struct Transfers(Mutex<HashMap<String, Arc<AtomicBool>>>);
 
-#[derive(Serialize)]
-struct Listing {
-    videos: Vec<Video>,
-    warning: Option<String>,
+#[derive(Default)]
+struct ListingState {
+    operation: Mutex<()>,
+    page_sizes: std::sync::Mutex<HashMap<(String, String), usize>>,
 }
 
 #[derive(Clone, Serialize)]
@@ -40,7 +54,9 @@ async fn probe_recorder(
     app: tauri::AppHandle,
     state: State<'_, ConnectionState>,
     address: String,
+    profile: Option<String>,
 ) -> Result<Recorder, String> {
+    state.set_profile(profile.as_deref())?;
     connection::connect(&app, &state, address).await
 }
 
@@ -50,7 +66,9 @@ async fn discover_recorder(
     state: State<'_, ConnectionState>,
     preferred: Option<String>,
     subnet: Option<String>,
+    profile: Option<String>,
 ) -> Result<Recorder, String> {
+    state.set_profile(profile.as_deref())?;
     connection::discover(&app, &state, preferred, subnet).await
 }
 
@@ -103,89 +121,101 @@ async fn release_recorder_network(
     state: State<'_, ConnectionState>,
 ) -> Result<(), String> {
     state.cancel();
+    let transfers = transfers::connection_lost(&app).await;
     let _operation = state.operation.lock().await;
-    network::release(&app).await
+    network::release(&app).await?;
+    #[cfg(target_os = "android")]
+    let _ = mobile::call(&app, "releaseWifi", serde_json::json!({})).await;
+    transfers
 }
 
 #[tauri::command]
 async fn list_videos(
     app: tauri::AppHandle,
+    diagnostics: State<'_, ConnectionState>,
+    listings: State<'_, ListingState>,
     address: String,
     category: String,
 ) -> Result<Listing, String> {
-    network::prepare(&app, false).await?;
+    // Each adapter serializes listing requests; A7 cannot serve parallel categories.
+    let _operation = listings.operation.lock().await;
+    let address = authority(&address)?;
+    let family = diagnostics.family(&address);
+    if family != "A7" {
+        network::prepare(&app, false).await?;
+        return adapters::list(&address, &category, &family).await;
+    }
     let property = match category.as_str() {
         "normal" => "DCIM",
         "event" => "EVENT",
         _ => return Err("不支持的录像分类".into()),
     };
-    let http = client()?;
-    let mut videos = Vec::new();
-    let mut seen = HashSet::new();
-    let mut offset = 0;
-    let mut repeated = 0;
-    for _ in 0..200 {
-        let mut page = None;
-        let mut failure = "录像列表读取失败".to_string();
-        for count in [50, 20, 1] {
-            let mut url = endpoint(&address, "dir", property)?;
-            url.query_pairs_mut()
-                .append_pair("format", "all")
-                .append_pair("count", &count.to_string())
-                .append_pair("from", &offset.to_string());
-            match text(&http, url, 10)
-                .await
-                .and_then(|xml| parse_listing_page(&xml, &category))
-            {
-                Ok((items, entries)) => {
-                    page = Some((items, entries, count));
-                    break;
+    diagnostics.log(
+        "listing",
+        format!("开始读取 {category}；设备={address}，property={property}"),
+    );
+    let result = async {
+        network::prepare(&app, false).await?;
+        let http = client()?;
+        let key = (address.clone(), category.clone());
+        let preferred = listings
+            .page_sizes
+            .lock()
+            .ok()
+            .and_then(|sizes| sizes.get(&key).copied());
+        let result = listing::read(
+            &category,
+            preferred,
+            |offset, count| {
+                let http = &http;
+                let address = &address;
+                async move {
+                    let mut url = endpoint(address, "dir", property).map_err(PageError::Other)?;
+                    url.query_pairs_mut()
+                        .append_pair("format", "all")
+                        .append_pair("count", &count.to_string())
+                        .append_pair("from", &offset.to_string());
+                    let response = http
+                        .get(url)
+                        .header("Accept-Encoding", "identity")
+                        .timeout(Duration::from_secs(12))
+                        .send()
+                        .await
+                        .map_err(|error| PageError::Other(format!("设备未响应：{error}")))?;
+                    if response.status() != reqwest::StatusCode::OK {
+                        return Err(PageError::Http(response.status().as_u16()));
+                    }
+                    response_text(response, 16 * 1024 * 1024)
+                        .await
+                        .map_err(PageError::Other)
                 }
-                Err(error) => failure = error,
+            },
+            |message| diagnostics.log("listing", format!("{category}: {message}")),
+        )
+        .await?;
+        if let Some(size) = result.page_size {
+            if let Ok(mut sizes) = listings.page_sizes.lock() {
+                sizes.insert(key, size);
             }
         }
-        let Some((items, entries, count)) = page else {
-            return if videos.is_empty() {
-                Err(failure)
-            } else {
-                Ok(Listing {
-                    videos,
-                    warning: Some(format!("列表尚未完整读取：{failure}")),
-                })
-            };
-        };
-        let before = videos.len();
-        for video in items {
-            if seen.insert(video.id.clone()) {
-                videos.push(video);
-            }
-        }
-        if entries == 0 || entries < count {
-            return Ok(Listing {
-                videos,
-                warning: None,
-            });
-        }
-        repeated = if videos.len() == before {
-            repeated + 1
-        } else {
-            0
-        };
-        if repeated >= 3 {
-            return Ok(Listing {
-                videos,
-                warning: Some("设备连续返回重复页，已保留读取到的录像，请刷新重试".into()),
-            });
-        }
-        offset += entries;
+        Ok::<_, String>(result)
     }
-    Ok(Listing {
-        videos,
-        warning: Some("已达到单次读取上限，列表可能不完整".into()),
-    })
+    .await;
+    match &result {
+        Ok(listing) => diagnostics.log(
+            "listing",
+            format!(
+                "{category} 读取结束：{} 条录像；{}",
+                listing.videos.len(),
+                listing.warning.as_deref().unwrap_or("列表完整")
+            ),
+        ),
+        Err(error) => diagnostics.log("listing-error", format!("{category}: {error}")),
+    }
+    result
 }
 
-fn media_directory(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+pub(crate) fn media_directory(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     app.path()
         .app_data_dir()
         .map(|path| path.join("media"))
@@ -216,7 +246,19 @@ async fn download_video(
     address: String,
     video: Video,
     task_id: String,
-) -> Result<String, String> {
+) -> Result<Video, String> {
+    let mask = settings::read(&app).await?.mask_downloads;
+    download_file(&app, &state, address, video, task_id, mask).await
+}
+
+pub(crate) async fn download_file(
+    app: &tauri::AppHandle,
+    state: &Transfers,
+    address: String,
+    video: Video,
+    task_id: String,
+    mask_vin: bool,
+) -> Result<Video, String> {
     if task_id.is_empty()
         || task_id.len() > 64
         || !task_id
@@ -227,7 +269,7 @@ async fn download_video(
     }
     network::prepare(&app, false).await?;
     let address = authority(&address)?;
-    let path = media_path(&video.path)?;
+    let path = video_path(&video)?;
     let name = path.rsplit('/').next().ok_or("缺少录像文件名")?;
     let mut url = Url::parse(&format!("http://{address}")).map_err(|e| e.to_string())?;
     url.set_path(&path);
@@ -253,84 +295,141 @@ async fn download_video(
         .collect();
     let final_path = dir.join(format!("{task_id}_{safe_name}"));
     let partial = final_path.with_extension("part");
-    let result=async {
-        tokio::fs::create_dir_all(&dir).await.map_err(|e|e.to_string())?;
-        let mut response=client()?.get(url).timeout(Duration::from_secs(1800)).header("Accept-Encoding","identity").send().await.map_err(|e|e.to_string())?.error_for_status().map_err(|e|e.to_string())?;
-        let total=response.content_length();
-        if response.headers().get("content-type").and_then(|h|h.to_str().ok()).is_some_and(|value|value.contains("text/")||value.contains("json")){return Err("设备返回了文本内容，未保存为录像".to_string());}
-        let mut file=tokio::fs::OpenOptions::new().write(true).create_new(true).open(&partial).await.map_err(|e|e.to_string())?;
-        let mut received=0u64;let mut first=Vec::new();let mut last_event=std::time::Instant::now();
-        loop {
-            let next=tokio::select! {
-                value=response.chunk()=>value.map_err(|e|e.to_string())?,
-                _=async {while !cancel.load(Ordering::Relaxed){tokio::time::sleep(Duration::from_millis(100)).await;}}=>return Err("下载已取消".into()),
-            };
-            let Some(chunk)=next else{break;};
-            if first.len()<512{first.extend_from_slice(&chunk[..chunk.len().min(512-first.len())]);}
-            received=received.checked_add(chunk.len() as u64).ok_or("录像文件过大")?;
-            file.write_all(&chunk).await.map_err(|e|e.to_string())?;
-            if last_event.elapsed()>Duration::from_millis(150){let _=app.emit("download-progress",Progress{task_id:task_id.clone(),received,total});last_event=std::time::Instant::now();}
+    // Recover a fully received source if the process stopped during local masking/saving.
+    if !partial.exists() && final_path.is_file() && !final_path.with_extension("json").is_file() {
+        let _ = tokio::fs::rename(&final_path, &partial).await;
+    }
+    let result = async {
+        tokio::fs::create_dir_all(&dir)
+            .await
+            .map_err(|e| e.to_string())?;
+        let mut last_event = std::time::Instant::now() - Duration::from_secs(1);
+        let received = resume::download(
+            &client()?,
+            url.as_str(),
+            &partial,
+            cancel.clone(),
+            |received, total| {
+                if last_event.elapsed() > Duration::from_millis(150) {
+                    let _ = app.emit(
+                        "download-progress",
+                        Progress {
+                            task_id: task_id.clone(),
+                            received,
+                            total,
+                        },
+                    );
+                    transfers::progress(app, &task_id, received, total);
+                    last_event = std::time::Instant::now();
+                }
+            },
+        )
+        .await?;
+        let mut file = tokio::fs::File::open(&partial)
+            .await
+            .map_err(|e| e.to_string())?;
+        let mut first = vec![0; received.min(512) as usize];
+        tokio::io::AsyncReadExt::read_exact(&mut file, &mut first)
+            .await
+            .map_err(|e| e.to_string())?;
+        drop(file);
+        let text = String::from_utf8_lossy(&first).trim_start().to_lowercase();
+        if text.starts_with("<html") || text.starts_with("<!doctype") || text.starts_with("<?xml") {
+            let _ = tokio::fs::remove_file(&partial).await;
+            resume::remove_checkpoint(&partial).await;
+            return Err("下载响应不是录像，未发布文件".into());
         }
-        if cancel.load(Ordering::Relaxed){return Err("下载已取消".into());}
-        if received==0||total.is_some_and(|length|length!=received){return Err("录像下载不完整，请重试".into());}
-        // Reject error pages even when the device labels them as binary data.
-        let first_text=String::from_utf8_lossy(&first).trim_start().to_lowercase();
-        if first_text.starts_with("<html")||first_text.starts_with("<!doctype")||first_text.starts_with("<?xml"){return Err("下载响应不是录像，未发布文件".into());}
-        file.flush().await.map_err(|e|e.to_string())?;file.sync_all().await.map_err(|e|e.to_string())?;drop(file);
-        tokio::fs::rename(&partial,&final_path).await.map_err(|e|e.to_string())?;
-        let saved_path=final_path.to_string_lossy().to_string();let mut saved=video;saved.size=received;saved.saved_path=Some(saved_path.clone());
-        let metadata=final_path.with_extension("json");let metadata_partial=final_path.with_extension("json.part");
-        tokio::fs::write(&metadata_partial,serde_json::to_vec(&saved).map_err(|e|e.to_string())?).await.map_err(|e|e.to_string())?;
-        tokio::fs::rename(metadata_partial,metadata).await.map_err(|e|e.to_string())?;
-        let _=app.emit("download-progress",Progress{task_id:task_id.clone(),received,total:Some(received)});
-        Ok(saved_path)
-    }.await;
+        if cancel.load(Ordering::Relaxed) {
+            return Err("下载已暂停，进度已保留".into());
+        }
+        tokio::fs::rename(&partial, &final_path)
+            .await
+            .map_err(|e| e.to_string())?;
+        let mut saved = video;
+        saved.size = received;
+        saved.saved_path = Some(final_path.to_string_lossy().to_string());
+        saved.storage = None;
+        transfers::progress(app, &task_id, received, Some(received));
+        if mask_vin {
+            transfers::phase(app, &task_id, "masking");
+            saved = editing::mask_download(app, saved, cancel.clone()).await?;
+        }
+        transfers::phase(app, &task_id, "saving");
+        let saved = library::store(app, saved, true).await?;
+        if mask_vin {
+            let _ = tokio::fs::remove_file(&final_path).await;
+        }
+        resume::remove_checkpoint(&partial).await;
+        Ok(saved)
+    }
+    .await;
     state.0.lock().await.remove(&task_id);
     if result.is_err() {
-        let _ = tokio::fs::remove_file(&partial).await;
-        let _ = tokio::fs::remove_file(&final_path).await;
+        // A completed source can also be resumed after interrupted local processing.
+        if final_path.is_file() {
+            let _ = tokio::fs::rename(&final_path, &partial).await;
+        }
         let _ = tokio::fs::remove_file(final_path.with_extension("json.part")).await;
+        let _ = tokio::fs::remove_file(final_path.with_extension("masked.part.mp4")).await;
+        let _ = tokio::fs::remove_file(final_path.with_extension("masked.mp4")).await;
     }
     result
 }
 
 #[tauri::command]
 async fn list_saved(app: tauri::AppHandle) -> Result<Vec<Video>, String> {
-    let directory = media_directory(&app)?;
-    if !directory.exists() {
-        return Ok(Vec::new());
-    }
-    let mut entries = tokio::fs::read_dir(&directory)
-        .await
-        .map_err(|e| e.to_string())?;
-    let mut videos = Vec::new();
-    while let Some(entry) = entries.next_entry().await.map_err(|e| e.to_string())? {
-        if entry.path().extension().is_some_and(|ext| ext == "json") {
-            let bytes = tokio::fs::read(entry.path())
-                .await
-                .map_err(|e| e.to_string())?;
-            if let Ok(video) = serde_json::from_slice::<Video>(&bytes) {
-                if video.saved_path.as_ref().is_some_and(|path| {
-                    let p = PathBuf::from(path);
-                    p.parent() == Some(directory.as_path()) && p.is_file()
-                }) {
-                    videos.push(video);
-                }
-            }
-        }
-    }
-    Ok(videos)
+    library::list(&app).await
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            journal::initialize(app.handle());
+            Ok(())
+        })
         .plugin(network::init())
+        .plugin(mobile::init())
+        .plugin(tauri_plugin_dialog::init())
+        .manage(media::MediaServer::default())
+        .manage(editing::Exports::default())
+        .manage(std::sync::Arc::new(transfers::Queue::default()))
         .plugin(tauri_plugin_opener::init())
         .manage(Transfers::default())
+        .manage(ListingState::default())
         .manage(ConnectionState::default())
         .invoke_handler(tauri::generate_handler![
+            metadata::video_metadata,
+            journal::get_operation_logs,
+            journal::export_operation_logs,
+            journal::record_client_event,
+            library::share_saved_many,
+            transfers::control_transfers,
+            mobile::native_media,
+            settings::get_settings,
+            settings::rename_app,
+            settings::save_appearance,
+            settings::set_connection_profile,
+            settings::confirm_vehicle,
+            settings::save_settings,
+            settings::choose_download_directory,
+            device::recorder_status,
+            device::recorder_command,
+            device::open_media,
+            device::live_media,
+            library::export_saved,
+            library::delete_saved,
+            library::rename_saved,
+            library::share_saved,
+            editing::export_video,
+            editing::cancel_export,
+            transfers::enqueue_transfers,
+            transfers::list_transfers,
+            transfers::cancel_transfer,
+            transfers::delete_transfer,
+            transfers::retry_transfer,
             probe_recorder,
+            connection::check_recorder_connection,
             discover_recorder,
             get_recorder_network,
             check_recorder_network,
@@ -344,5 +443,5 @@ pub fn run() {
             saved_directory
         ])
         .run(tauri::generate_context!())
-        .expect("银河记录仪启动失败");
+        .expect("吉行影记启动失败");
 }

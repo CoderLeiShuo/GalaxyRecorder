@@ -1,0 +1,14 @@
+import {useState} from 'react';
+import {invoke} from '@tauri-apps/api/core';
+import {CarFront,LoaderCircle,X} from 'lucide-react';
+import Dialog from './Dialog';
+import type {DeviceMemory} from './types';
+import {vehicleModels} from './lib/vehicle';
+export default function VehicleDialog({device,onClose,onSaved}:{device:DeviceMemory;onClose:()=>void;onSaved:(device:DeviceMemory)=>void}){
+ const [model,setModel]=useState(device.vehicle?.model||'');const [year,setYear]=useState(device.vehicle?.year?.toString()||'');const [configuration,setConfiguration]=useState(device.vehicle?.configuration||'');const [working,setWorking]=useState(false);const [error,setError]=useState('');
+ async function save(){
+  if(!model.trim()||year&&(!/^20\d{2}$/.test(year))){setError('请填写车辆型号，年款可留空或填写 2000–2099');return}
+  setWorking(true);setError('');try{const result=await invoke<DeviceMemory>('confirm_vehicle',{deviceKey:device.key,model:model.trim(),year:year?Number(year):null,configuration:configuration.trim()||null});onSaved(result);onClose();}catch(error){setError(String(error));}finally{setWorking(false);}
+ }
+ return <Dialog label="确认车辆信息" className="vehicle-info-dialog" onClose={()=>{if(!working)onClose();}}><div className="modal-content"><div className="modal-heading"><span className="modal-symbol"><CarFront size={23}/></span><button className="icon-button" aria-label="关闭车辆信息" disabled={working} onClick={onClose}><X size={20}/></button></div><h2>{device.vehicle?'车辆信息':'确认你的车辆'}</h2><p className="modal-description">{device.vehicle?.source==='device'?'已读取设备提供的车型信息，可以补充年款与配置。':device.vehicle?'车型已保存在这部手机上，可以修改后保存。':'记录仪没有提供完整车型，请确认一次。之后保存在这部手机上，断网或重开也能显示。'}</p><form onSubmit={event=>{event.preventDefault();void save();}}><label className="form-field">车辆型号<input aria-label="车辆型号" list="vehicle-model-list" autoComplete="off" value={model} maxLength={80} disabled={working} onChange={event=>setModel(event.target.value)} placeholder="例如：星越L"/></label><datalist id="vehicle-model-list">{vehicleModels.map(model=><option key={model} value={model}/>)}</datalist><label className="form-field">年款（选填）<input aria-label="车辆年款" type="number" min="2000" max="2099" placeholder="例如：2026" value={year} disabled={working} onChange={event=>setYear(event.target.value)}/></label><label className="form-field">配置（选填）<input aria-label="车辆配置" maxLength={80} placeholder="例如：旗舰型" value={configuration} disabled={working} onChange={event=>setConfiguration(event.target.value)}/></label>{error&&<p className="form-error" role="alert">{error}</p>}<div className="vehicle-dialog-actions"><button type="button" className="secondary-button" disabled={working} onClick={onClose}>稍后填写</button><button className="primary-button" disabled={working}>{working&&<LoaderCircle size={16} className="spinning"/>}保存车型</button></div></form></div></Dialog>
+}

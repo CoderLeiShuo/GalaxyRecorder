@@ -1,0 +1,75 @@
+{
+  "File": "jixing-yingji-0.8.3-date-groups-arm64-test.apk",
+  "ProductName": "吉行影记",
+  "Version": "0.8.3",
+  "VersionCode": 8003,
+  "BuiltAt": "2026-10-28T16:21:52+08:00",
+  "Stack": "Tauri 2 + React + TypeScript + Rust; Android Kotlin media and network plugins",
+  "Bytes": 13245572,
+  "MiB": 12.63,
+  "SHA256": "d52331c608bb6458b74f7064cbedfa705ca52bd219fd4596a498c59e86f72ef0",
+  "SignatureVerified": true,
+  "SigningCertificateSHA256": "c05531d9229ed474d85cbb2c32f8bfe8ee775a5e3711c448315490a3ce345c0e",
+  "SignatureCompatibleWith082": true,
+  "ZipCRCVerified": true,
+  "ZipAlignment16KBVerified": true,
+  "ElfLoadAlignment": [
+    16384,
+    16384,
+    16384,
+    16384
+  ],
+  "NativeLibraryBytes": 10365184,
+  "NativeLibrarySHA256": "b9e1c7ed6200c40abdc0242d6b3f9d43e1938fe8c403f964b61a8f1bb614cbdb",
+  "PackagedNativeMatchesBuild": true,
+  "PackagedFrontendMatchesBuild": true,
+  "PackagedFrontendAssets": [
+    "index-B_kHwQzl.css",
+    "index-qdQw3ZMr.js"
+  ],
+  "PackagedLogoPixelMatches": {
+    "ic_launcher_foreground.png": "res/as.png",
+    "ic_launcher_background.png": "res/Gx.png",
+    "ic_launcher.png": "res/o-.png",
+    "ic_launcher_round.png": "res/Gc.png"
+  },
+  "PluginAndVolumeMethodsPresentInDex": [
+    "getStreamVolume",
+    "setStreamVolume",
+    "RecorderMediaPlugin",
+    "RecorderNetworkPlugin",
+    "directoryResult",
+    "scanResult",
+    "imageResult",
+    "permissionResult",
+    "searchRecorderWifi"
+  ],
+  "Installed": false,
+  "LaunchVerified": false,
+  "VehicleVerified": false,
+  "PullReconnectPhoneRuntimeVerified": false,
+  "SystemVolumeRuntimeVerified": false,
+  "Tests": {
+    "Frontend": 36,
+    "MediaUI": 37,
+    "ConnectionStateUI": 13,
+    "VehicleAndSchemesUI": 20,
+    "RecordingGroupsAndLayoutUI": 16,
+    "TotalChecksThisRelease": 122,
+    "MockedRecorderInUI": true,
+    "MockedAndroidSystemCallsInUI": true,
+    "FrontendProductionBuild": true,
+    "AndroidReleaseBuild": true
+  },
+  "PreviousReleaseVersion": "0.8.2",
+  "PreviousReleaseBytes": 13245508,
+  "Notes": [
+    "Device pull reconnect runs only while disconnected and idle, probes the remembered address first and falls back to discovery; connected pulls never probe or rediscover.",
+    "Removed old reconnect caption/button/callback and styles. Device picture/title touch drags reconnect without firing image/title editing clicks.",
+    "Videos group by recording date in descending order; missing dates have a separate group. Group counts reflect filtered totals, with the existing 60-clip pagination preserved across date boundaries.",
+    "Grid/list, date/search filters, saved/emergency categories and cross-date batch selection verified with 71 fixture clips.",
+    "Settings Wi-Fi header button removed while its manage-connection action remains. Top-left app logo removed from interface, launcher artwork retained. Device header and title have extra top spacing.",
+    "122 unit/UI checks passed. No handset installation; Android native capabilities remain from 0.8.2 and actual gesture/reconnect acceptance still requires the phone/car.",
+    "See analysis/FEEDBACK-0.8.3.md."
+  ]
+}

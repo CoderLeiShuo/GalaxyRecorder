@@ -1,0 +1,14 @@
+{
+  "application": "吉行影记",
+  "version": "0.8.5",
+  "build": "8005",
+  "bundleId": "com.leishuo.galaxyrecorder",
+  "platform": "iPhoneOS",
+  "architecture": "arm64",
+  "minimumIOS": "15.0",
+  "signed": false,
+  "requiresUserSigning": true,
+  "bytes": 6584011,
+  "sha256": "2daab7d2042b4b7df657f99d952afd7289bd0424ff78b362148f628f2c5e68c9",
+  "file": "jixing-yingji-0.8.5-ios-arm64-unsigned.ipa"
+}

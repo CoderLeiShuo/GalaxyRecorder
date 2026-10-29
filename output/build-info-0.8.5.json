@@ -1,0 +1,80 @@
+{
+  "File": "jixing-yingji-0.8.5-logo-transfers-arm64-test.apk",
+  "ProductName": "吉行影记",
+  "Version": "0.8.5",
+  "VersionCode": 8005,
+  "BuiltAt": "2026-10-28T18:49:30+08:00",
+  "Stack": "Tauri 2 + React + TypeScript + Rust; Android Kotlin media and network plugins",
+  "Bytes": 13112572,
+  "MiB": 12.51,
+  "SHA256": "c8b90fc70547a646376927f3eb450620076710c4ccfab3a4f0b742373c6fe3be",
+  "SignatureVerified": true,
+  "SigningCertificateSHA256": "c05531d9229ed474d85cbb2c32f8bfe8ee775a5e3711c448315490a3ce345c0e",
+  "SignatureCompatibleWith084": true,
+  "PreviousAPKUnchanged": true,
+  "ZipCRCVerified": true,
+  "ZipAlignment16KBVerified": true,
+  "ElfLoadAlignment": [
+    16384,
+    16384,
+    16384,
+    16384
+  ],
+  "NativeLibraryBytes": 10352832,
+  "NativeLibrarySHA256": "1fffece6efa3ad84bade6f5e11b7945c2dacfd41fc3bd7871c30a4019e38c5dd",
+  "PackagedNativeMatchesBuild": true,
+  "PackagedFrontendMatchesBuild": true,
+  "PackagedFrontendAssets": [
+    "index-BXwhh1SC.css",
+    "index-D2TDcf9U.js"
+  ],
+  "PackagedLogoPixelMatches": {
+    "ic_launcher_foreground.png": "res/as.png",
+    "ic_launcher_background.png": "res/Gx.png",
+    "ic_launcher.png": "res/o-.png",
+    "ic_launcher_round.png": "res/Gc.png"
+  },
+  "AdaptiveLauncherReferencesVerified": true,
+  "AdaptiveWhiteAndRedPixelsClippedByCircleMask": 0,
+  "PluginAndVolumeMethodsPresentInDex": [
+    "getStreamVolume",
+    "setStreamVolume",
+    "RecorderMediaPlugin",
+    "RecorderNetworkPlugin",
+    "directoryResult",
+    "scanResult",
+    "imageResult",
+    "permissionResult",
+    "searchRecorderWifi"
+  ],
+  "Installed": false,
+  "LaunchVerified": false,
+  "VehicleVerified": false,
+  "SystemVolumeRuntimeVerified": false,
+  "Tests": {
+    "Frontend": 36,
+    "ConnectionAndTransferUI": 17,
+    "VehicleAndSchemesUI": 21,
+    "WorkflowsUI": 13,
+    "TotalChecksThisRelease": 87,
+    "MockedRecorderInUI": true,
+    "MockedAndroidSystemCallsInUI": true,
+    "FrontendProductionBuild": true,
+    "AndroidReleaseBuild": true
+  },
+  "PreviousReleaseVersion": "0.8.4",
+  "PreviousReleaseBytes": 13081508,
+  "LogoConcept": "01 原版基准（最新九款细化图左上）",
+  "LogoMaster": "design/app-icon-v4/master.png",
+  "LogoPrompt": "design/app-icon-v4/README.md",
+  "LogoGeneration": "built-in image_gen edit of user-approved concept preview",
+  "Notes": [
+    "Approved 01 baseline uses a white shouldered camera outline, glossy blue lens, red recording dot and lower-right road marks. Launcher, desktop and favicon assets updated consistently.",
+    "Device header plus/connection button removed. Device connection CTA, pull reconnect and manage-connection entry remain available; in-app top-left logo remains absent.",
+    "Transfer actions have a separate equal-width two-button row: pause/resume/view on the left and delete task on the right. Progress/error messages occupy their own row.",
+    "320/360/390/414/1280px layouts, long filenames/error messages, paused state alignment, pause/resume byte retention and saved-file preservation on deletion verified.",
+    "87 unit/UI checks passed; UI system/recorder calls are mocked. Actual phone/vehicle behavior not newly tested; Android native capabilities remain from the previous build.",
+    "No phone installation, no original APK changes, and no automatic replacement of the device image with the generated car image.",
+    "See analysis/RELEASE-0.8.5.md."
+  ]
+}

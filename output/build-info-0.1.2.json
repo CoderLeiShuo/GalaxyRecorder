@@ -1,0 +1,21 @@
+{
+  "File": "galaxy-recorder-0.1.2-connection-fix-arm64-test.apk",
+  "Version": "0.1.2",
+  "VersionCode": 1002,
+  "Design": "A - Glacier Silver",
+  "Bytes": 17277589,
+  "MiB": 16.48,
+  "SHA256": "5F0FAD77CC571BC14D0D4130E18C1166CD8471B3E4746C003848F8B972F61BE5",
+  "SignatureVerified": true,
+  "Installed": false,
+  "LaunchVerified": false,
+  "PhoneWifiSelfCheckVerified": false,
+  "VehicleVerified": false,
+  "Tests": {
+    "SimulatedConnectionFlows": 7,
+    "Frontend": 3,
+    "Rust": 12,
+    "ExistingInteractions": 9,
+    "Layout": 16
+  }
+}

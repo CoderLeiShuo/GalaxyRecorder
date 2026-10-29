@@ -2,6 +2,8 @@
 :root[data-theme=dark] {--bg:#151d19;--surface:#1d2821;--surface-alt:#243128;--text:#e5efe6;--muted:#8fa093;--secondary:#b0beb3;--line:#303f33;--accent:#9bd6af;--accent-strong:#b3e7c4;--soft:#2a3f2f;--on-accent:#183321;--danger:#f2a497;--shadow:0 8px 28px #00000015;color-scheme:dark;}
 * {box-sizing:border-box;}
 body {margin:0;min-width:320px;color:var(--text);background:var(--bg);}
+/* Keep touch scrolling; the full-screen player handles video zoom itself. */
+@media (pointer:coarse) {html,body,#root {touch-action:pan-x pan-y;}}
 button,input {font:inherit;}
 button {cursor:pointer;color:inherit;}
 button:disabled {cursor:not-allowed;opacity:.48;}

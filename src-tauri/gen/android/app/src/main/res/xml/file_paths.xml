@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
+  <files-path name="recorder_media" path="media/" />
+  <!-- Tauri appDataDir/media, including existing saved recordings. -->
+  <files-path name="tauri_media" path="../media/" />
   <external-path name="my_images" path="." />
   <cache-path name="my_cache_images" path="." />
 </paths>

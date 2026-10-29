@@ -1,100 +1,47 @@
-import { useEffect, useRef, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
-import { ArrowRight, Check, Copy, LoaderCircle, PlugZap, Search, ShieldCheck, Unplug, Wifi, X } from 'lucide-react';
-import type { ConnectionDiagnostics, ConnectionProgress, NetworkInfo, Recorder } from './types';
-import { connectRecorder, native } from './lib/recorder';
+import { useState } from 'react';
+import { LoaderCircle, QrCode, ChevronRight, Unplug, Wifi, X } from 'lucide-react';
+import type { Recorder,ConnectionProfile,ConnectOptions } from './types';
+import {connectionProfiles} from './lib/vehicle';
+import {validateAddress} from './lib/recorder';
+import Dialog from './Dialog';
+import SchemePicker from './SchemePicker';
+import { android, ios, nativeMedia, parseWifiQr } from './lib/media';
 
-type Props = { busy: boolean; recorder: Recorder | null; demo: boolean; onClose: () => void; onDemo: () => void; onDisconnect: () => void; onConnect: (recorder: Recorder) => void };
-const errorText = (error: unknown) => error instanceof Error ? error.message : String(error);
-
-export default function ConnectDialog({ busy, recorder, demo, onClose, onDemo, onDisconnect, onConnect }: Props) {
-  const dialog = useRef<HTMLDialogElement>(null);
-  const generation = useRef(0);
-  const [address, setAddress] = useState(() => localStorage.getItem('galaxy-address') || '');
-  const [working, setWorking] = useState<'automatic' | 'manual' | 'check' | null>(null);
-  const [network, setNetwork] = useState<NetworkInfo | null>(null);
-  const [progress, setProgress] = useState('');
-  const [error, setError] = useState('');
-  const [diagnostics, setDiagnostics] = useState<ConnectionDiagnostics | null>(null);
-  const [showDiagnostics, setShowDiagnostics] = useState(false);
-  const [copyMessage, setCopyMessage] = useState('');
-
-  useEffect(() => {
-    dialog.current?.showModal();
-    let closed = false;
-    let unsubscribe: (() => void) | undefined;
-    if (native) {
-      invoke<NetworkInfo>('get_recorder_network').then(info => { if (!closed) setNetwork(info); }).catch(error => { if (!closed) setError(errorText(error)); });
-      listen<ConnectionProgress>('connection-progress', ({ payload }) => { if (!closed) setProgress(payload.message); })
-        .then(fn => { if (closed) fn(); else unsubscribe = fn; }).catch(() => {});
-    }
-    return () => {
-      closed = true; generation.current++; unsubscribe?.();
-      if (native) void invoke('cancel_recorder_discovery').catch(() => {});
-    };
-  }, []);
-
-  async function readDiagnostics() {
-    if (!native) { setError('请在手机或电脑应用中查看连接诊断'); return; }
-    try { setDiagnostics(await invoke<ConnectionDiagnostics>('get_connection_diagnostics')); }
-    catch (error) { setError(errorText(error)); }
-  }
-
-  async function run(method: 'automatic' | 'manual' | 'check') {
-    const current = ++generation.current;
-    setWorking(method); setError(''); setCopyMessage('');
-    setProgress(method === 'automatic' ? '正在准备 Wi-Fi，并监听记录仪广播…' : method === 'check' ? '正在检查应用能否使用当前 Wi-Fi…' : '正在确认记录仪响应…');
+type Props = {profile:ConnectionProfile;onProfileChange:(profile:ConnectionProfile)=>Promise<void>; busy: boolean; connecting: boolean; recorder: Recorder | null; onClose: () => void; onDisconnect: () => void; onConnect: (options?:ConnectOptions) => Promise<Recorder>; onCancel: () => void };
+export default function ConnectDialog({ profile,onProfileChange,busy, connecting, recorder, onClose, onDisconnect, onConnect, onCancel }: Props) {
+  const [schemeOpen,setSchemeOpen]=useState(false);
+  const [scanning, setScanning] = useState(false); const [error, setError] = useState('');
+  const [password,setPassword]=useState('12345678');const [openWifi,setOpenWifi]=useState(false);const [manual,setManual]=useState('');const [changing,setChanging]=useState(false);
+  const working = connecting || scanning || changing;
+  async function connect(options:ConnectOptions={}) { setError(''); try { await onConnect(options); onClose(); } catch { setError('连接未成功，请确认已连接车机热点，并开启车机记录仪后再试。'); } }
+  async function scan(image: boolean) {
+    setScanning(true); setError('');
     try {
-      // Validate manual input before the native-only check so browser previews remain useful.
-      if (method === 'manual') {
-        const rec = await connectRecorder(address);
-        if (current !== generation.current) return;
-        localStorage.setItem('galaxy-address', rec.address); onConnect(rec);
-      } else {
-        if (!native) throw new Error('浏览器中可体验演示。真实连接请运行电脑版或手机版应用。');
-        if (method === 'check') {
-          const info = await invoke<NetworkInfo>('check_recorder_network');
-          if (current !== generation.current) return;
-          setNetwork(info);
-          setProgress(info.platform === 'android' ? 'Wi-Fi 自检通过，应用可使用此网络。自检未查找记录仪。' : '局域网自检通过。自检未查找记录仪。');
-        } else {
-          const rec = await invoke<Recorder>('discover_recorder', { preferred: localStorage.getItem('galaxy-address') || null });
-          if (current !== generation.current) return;
-          localStorage.setItem('galaxy-address', rec.address); onConnect(rec);
-        }
-      }
-    } catch (error) {
-      if (current === generation.current) { setError(errorText(error)); setProgress(''); }
-    } finally {
-      if (current === generation.current) {
-        setWorking(null);
-        if (native) await readDiagnostics();
-      }
-    }
+      const result = await nativeMedia<{ text: string | null }>(image ? 'scanImage' : 'scan');
+      if (!result.text) return;
+      await nativeMedia('connectWifi', parseWifiQr(result.text));
+      await onConnect({force:true}); onClose();
+    } catch (error) { setError(String(error).includes('二维码') ? String(error) : '连接未完成，请确认热点已开启，并允许系统连接后重试。'); }
+    finally { setScanning(false); }
   }
-
-  async function copyDiagnostics() {
-    if (!diagnostics) return;
-    try { await navigator.clipboard.writeText(JSON.stringify(diagnostics, null, 2)); setCopyMessage('已复制'); }
-    catch { setCopyMessage('请长按下方文本选择并复制'); }
-  }
-
-  return <dialog ref={dialog} className="modal connect-dialog" aria-label="连接记录仪" onCancel={onClose} onClick={event => { if (event.target === event.currentTarget) onClose(); }}><div className="modal-content">
+  async function search(){setScanning(true);setError('');try{await nativeMedia('searchRecorderWifi',{password:openWifi?'':password});await onConnect({force:true,profile:profile==='AUTO'?'E5':profile});onClose();}catch(error){setError(String(error));}finally{setScanning(false);}}
+  async function change(profile:ConnectionProfile){setChanging(true);setError('');try{await onProfileChange(profile);setSchemeOpen(false);}catch(error){setError(String(error));throw error;}finally{setChanging(false);}}
+  return <Dialog label="连接记录仪" className="connect-dialog" onClose={onClose}><div className="modal-content">
     <div className="modal-heading"><span className="modal-symbol"><Wifi size={23} /></span><button className="icon-button" aria-label="关闭连接窗口" onClick={onClose}><X size={20} /></button></div>
-    <h2>连接你的星越 L</h2>
-    <p className="modal-description">先在系统 Wi-Fi 中连接车机热点，再回到这里自动查找。</p>
-    <div className="connection-steps"><div><span>1</span><div><strong>开启车机热点</strong><p>并打开车机上的原厂记录仪应用</p></div></div><div><span>2</span><div><strong>手机连接车机热点</strong><p>热点没有互联网也可以使用</p></div></div></div>
-    <div className={'connection-network ' + (network?.available ? 'available' : '')} role="status"><Wifi size={18} /><div><strong>{network?.available ? '已检测到 Wi-Fi' : native ? '等待 Wi-Fi 连接' : '浏览器预览'}</strong><span>{network?.selected ? `${network.selected.ip} / ${network.selected.prefixLength} · 自动读取网络地址` : native ? '连接车机热点后，点击下方自动查找' : '在手机应用中可自动读取 Wi-Fi 并连接'}</span></div></div>
+    <h2>{recorder ? '记录仪已连接' : '连接你的记录仪'}</h2>
+    <p className="modal-description">{ios ? '开启车机热点与记录仪，先在 iPhone 的系统设置中连接车机 Wi-Fi，再回到这里点「连接」。首次连接请允许访问本地网络。' : '开启车机热点与记录仪，连接热点后点「连接」，或扫描车机热点二维码。'}</p>
     {error && <div className="form-error" role="alert">{error}</div>}
-    {busy && <div className="form-error">请先完成或取消传输，再切换设备。</div>}
-    {progress && <p className="connection-progress" role="status">{working && <LoaderCircle className="spinning" size={15} />}{!working && !error && <Check size={15} />}{progress}</p>}
-    <button className="primary-button full-width automatic-connect" disabled={Boolean(working) || busy} onClick={() => void run('automatic')}>{working === 'automatic' ? <LoaderCircle className="spinning" size={18} /> : <Search size={18} />}自动查找记录仪</button>
-    {working === 'automatic' && <button className="quiet-button full-width" onClick={() => { setProgress('正在停止查找…'); void invoke('cancel_recorder_discovery').catch(error => setError(errorText(error))); }}>停止查找</button>}
-    <div className="connection-tools"><button className="text-button" disabled={Boolean(working) || busy} onClick={() => void run('check')}><ShieldCheck size={15} />网络自检</button><button className="text-button" disabled={Boolean(working)} onClick={() => { setShowDiagnostics(!showDiagnostics); if (!showDiagnostics) void readDiagnostics(); }}>连接诊断</button></div>
-    <details className="manual-connection" open={!native ? true : undefined}><summary>手动输入设备地址</summary><label className="form-field">记录仪地址<input placeholder="例如 192.168.43.123" value={address} disabled={Boolean(working) || busy} onChange={event => setAddress(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !working && !busy) void run('manual'); }} /><small>原版显示的记录仪地址，可附加端口。</small></label><button className="secondary-button full-width" disabled={Boolean(working) || busy || !address.trim()} onClick={() => void run('manual')}><PlugZap size={16} />连接设备</button></details>
-    {showDiagnostics && <section className="connection-diagnostics" aria-label="连接诊断"><div><strong>本次连接诊断</strong><button className="text-button" disabled={!diagnostics} onClick={() => void copyDiagnostics()}><Copy size={14} />{copyMessage || '复制诊断'}</button></div><p>记录网络状态与识别结果，便于排查连接问题。</p><textarea aria-label="诊断内容" readOnly value={diagnostics ? JSON.stringify(diagnostics, null, 2) : '尚无诊断信息，请先自动查找或运行网络自检。'} /></section>}
-    {(recorder || demo) && <button className="quiet-button disconnect-action" disabled={busy || Boolean(working)} onClick={onDisconnect}><Unplug size={15} />断开当前连接</button>}
-    <div className="modal-bottom"><span>现在不在车旁？</span><button className="text-button" disabled={busy || Boolean(working)} onClick={onDemo}>体验界面演示<ArrowRight size={14} /></button></div>
-  </div></dialog>;
+    {busy && <p className="form-error">传输中，请先暂停下载再切换连接。</p>}
+    {working && <p className="connection-progress" role="status"><LoaderCircle className="spinning" size={15} />正在连接，请稍候…</p>}
+    <button className="connection-scheme-trigger" aria-label="选择连接方案" disabled={working||busy} onClick={()=>setSchemeOpen(true)}><span><small>连接方案</small><strong>{connectionProfiles.find(option=>option.value===profile)?.label}</strong><span>{connectionProfiles.find(option=>option.value===profile)?.description}</span></span><ChevronRight size={20}/></button>
+    {!recorder && <button className="primary-button full-width automatic-connect" disabled={working || busy} onClick={() => void connect({force:true})}><Wifi size={18} />连接记录仪</button>}
+    {connecting && <button className="quiet-button full-width" onClick={onCancel}>取消连接</button>}
+    {android && !recorder && <div className="wifi-scan-actions"><button className="secondary-button" disabled={working || busy} onClick={() => void scan(false)}><QrCode size={17} />扫码连接</button><button className="secondary-button" disabled={working || busy} onClick={() => void scan(true)}>从相册识别</button><button className="text-button" onClick={() => void nativeMedia('openWifi')}>打开 Wi-Fi 设置</button></div>}
+    {recorder&&<button className="primary-button full-width" disabled={working||busy} onClick={()=>void connect({force:true})}>按所选方案重新连接</button>}
+    {android&&!recorder&&<details className="connection-alternatives"><summary>搜索记录仪 Wi-Fi</summary><p className="setting-explanation">适用于原厂 GEELY_ 记录仪热点。连接时请在系统弹窗中确认。</p><label className="form-field">记录仪 Wi-Fi 密码<input aria-label="记录仪 Wi-Fi 密码" type="password" value={password} disabled={working||openWifi} onChange={event=>setPassword(event.target.value)}/></label><label className="toggle-row"><span>记录仪热点没有密码</span><input aria-label="无密码热点" type="checkbox" checked={openWifi} disabled={working} onChange={event=>setOpenWifi(event.target.checked)}/></label><button className="secondary-button full-width" disabled={working||busy} onClick={()=>void search()}>搜索并连接记录仪</button></details>}
+    {!recorder&&<details className="connection-alternatives"><summary>手动连接已知设备</summary><p className="setting-explanation">自动连接未成功时，可填写原 APP 中的记录仪地址。</p><label className="form-field">记录仪地址<input aria-label="记录仪地址" placeholder="例如 192.168.43.123" value={manual} disabled={working} onChange={event=>setManual(event.target.value)}/></label><button className="secondary-button full-width" disabled={working||busy||!manual.trim()} onClick={()=>{try{void connect({force:true,address:validateAddress(manual)})}catch(error){setError(String(error));}}}>连接此设备</button></details>}
+    {recorder && <button className="quiet-button disconnect-action" disabled={busy || working} onClick={onDisconnect}><Unplug size={15} />断开连接</button>}
+    <p className="setting-explanation">每次打开会自动尝试连接；在首页下拉也可重新连接。已连接时可直接使用。</p>
+    {schemeOpen&&<SchemePicker profile={profile} busy={changing} onClose={()=>{if(!changing)setSchemeOpen(false);}} onConfirm={change}/>}
+  </div></Dialog>;
 }

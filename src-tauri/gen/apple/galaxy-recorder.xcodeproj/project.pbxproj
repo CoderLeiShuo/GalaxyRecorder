@@ -1,0 +1,522 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		066EC4A1BB3012F0BB40F890 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AE748AE223262279C6D2ADE /* Security.framework */; };
+		1E6BDDBDA6136C1606A6FBCA /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 208443C0C6B2064376C2620D /* assets */; };
+		1FCA29941535C9B9E1EE0E14 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2827B0BE98E99E882A2B53C /* Photos.framework */; };
+		31322821946B8C2A2F28EC2A /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 483961A3FE76FC212313F77F /* main.mm */; };
+		3529BA0B800252B23A25D64A /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFC73AB04D16C65FE68B2D91 /* Metal.framework */; };
+		3C444E75294BCCB9DA0B74DC /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5927BE525DFA32D7491B6246 /* CoreImage.framework */; };
+		502870BFB16CE1B0ED3A05C6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE98AAD609771014229CAF83 /* CoreGraphics.framework */; };
+		770DD86A95ECA7AB30A09F4F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D66B2713C7566751F7B8450 /* QuartzCore.framework */; };
+		7C666B403A8B1EFDF0F35166 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48CF0D48ABDE96C6DD313BD6 /* LaunchScreen.storyboard */; };
+		90D4EE8F330888C21F0E7AEC /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F86DB563F97BCE8F1FE0CB /* MetalKit.framework */; };
+		A0370B14C985080D04409897 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F85322AEA92AEC583316A8F9 /* MediaPlayer.framework */; };
+		A72F704D4E5A8AA52373E571 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9046B82D2B3717ECD64BDBEB /* WebKit.framework */; };
+		AF7CA44AD29367DE7482E9D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FE72C1B86CE1B7FB53ADB3C8 /* Assets.xcassets */; };
+		B057DB3D7383EEBAAFED382F /* libapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ACA053FC385DCD6E94EB100 /* libapp.a */; };
+		D5678C0AB36E1585DCF057CC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABC144351F7C07C5A8E93876 /* UIKit.framework */; };
+		FF4DB8967398047A5D7C44E0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A1004C26E390A9B2889021 /* AVFoundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		17F86DB563F97BCE8F1FE0CB /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		208443C0C6B2064376C2620D /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = SOURCE_ROOT; };
+		229B2D593FB287187798568A /* resume.rs */ = {isa = PBXFileReference; path = resume.rs; sourceTree = "<group>"; };
+		23579D27C8DC7514FE165302 /* journal.rs */ = {isa = PBXFileReference; path = journal.rs; sourceTree = "<group>"; };
+		24C0B48249165E49C2CE8691 /* adapters.rs */ = {isa = PBXFileReference; path = adapters.rs; sourceTree = "<group>"; };
+		2D4C29318615E8A5D3FE7DC9 /* editing.rs */ = {isa = PBXFileReference; path = editing.rs; sourceTree = "<group>"; };
+		33E2596512128371837A2D72 /* transfers.rs */ = {isa = PBXFileReference; path = transfers.rs; sourceTree = "<group>"; };
+		3CF8EB0821A463846D51C508 /* vehicle.rs */ = {isa = PBXFileReference; path = vehicle.rs; sourceTree = "<group>"; };
+		483961A3FE76FC212313F77F /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		48CF0D48ABDE96C6DD313BD6 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4CC204EB9C863B0A539D2165 /* settings.rs */ = {isa = PBXFileReference; path = settings.rs; sourceTree = "<group>"; };
+		4EA4DB891088AA09D4BF46F0 /* device.rs */ = {isa = PBXFileReference; path = device.rs; sourceTree = "<group>"; };
+		51B322FFFE03A64B14961A07 /* connection.rs */ = {isa = PBXFileReference; path = connection.rs; sourceTree = "<group>"; };
+		56E6C8316FFB24762D0C2549 /* mobile.rs */ = {isa = PBXFileReference; path = mobile.rs; sourceTree = "<group>"; };
+		5927BE525DFA32D7491B6246 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		5AE748AE223262279C6D2ADE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		66088D78A2D2B40B2E310DE3 /* main.rs */ = {isa = PBXFileReference; path = main.rs; sourceTree = "<group>"; };
+		6D66B2713C7566751F7B8450 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		750EE9AF30E2ED49F1CF8BEF /* media.rs */ = {isa = PBXFileReference; path = media.rs; sourceTree = "<group>"; };
+		7B761B2D27B1F302BD8E93DC /* galaxy-recorder_iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "galaxy-recorder_iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D7A23FD3623FAB3BD89CF9A /* network.rs */ = {isa = PBXFileReference; path = network.rs; sourceTree = "<group>"; };
+		87E48B000C5E6FCAE6D82D23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8ACA053FC385DCD6E94EB100 /* libapp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libapp.a; sourceTree = "<group>"; };
+		9046B82D2B3717ECD64BDBEB /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		A355F398857288E597C8B339 /* library.rs */ = {isa = PBXFileReference; path = library.rs; sourceTree = "<group>"; };
+		AAA9D2EA0A1303A61302640A /* bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bindings.h; sourceTree = "<group>"; };
+		ABC144351F7C07C5A8E93876 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		BE98AAD609771014229CAF83 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		BFC73AB04D16C65FE68B2D91 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		C5277CF51DA528C81B33722A /* lib.rs */ = {isa = PBXFileReference; path = lib.rs; sourceTree = "<group>"; };
+		CA9B73E0D556AC966E9BA9CE /* metadata.rs */ = {isa = PBXFileReference; path = metadata.rs; sourceTree = "<group>"; };
+		CDF996F59DBBFE136A06DAB4 /* listing.rs */ = {isa = PBXFileReference; path = listing.rs; sourceTree = "<group>"; };
+		D0A1004C26E390A9B2889021 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D29B01230323C789590EB38C /* protocol.rs */ = {isa = PBXFileReference; path = protocol.rs; sourceTree = "<group>"; };
+		E2827B0BE98E99E882A2B53C /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		E9A5EE00F5DFE25B3651E649 /* galaxy-recorder_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "galaxy-recorder_iOS.entitlements"; sourceTree = "<group>"; };
+		F85322AEA92AEC583316A8F9 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		FE72C1B86CE1B7FB53ADB3C8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B0CA9DA3F2F160919CF647AD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B057DB3D7383EEBAAFED382F /* libapp.a in Frameworks */,
+				502870BFB16CE1B0ED3A05C6 /* CoreGraphics.framework in Frameworks */,
+				FF4DB8967398047A5D7C44E0 /* AVFoundation.framework in Frameworks */,
+				1FCA29941535C9B9E1EE0E14 /* Photos.framework in Frameworks */,
+				A0370B14C985080D04409897 /* MediaPlayer.framework in Frameworks */,
+				3C444E75294BCCB9DA0B74DC /* CoreImage.framework in Frameworks */,
+				3529BA0B800252B23A25D64A /* Metal.framework in Frameworks */,
+				90D4EE8F330888C21F0E7AEC /* MetalKit.framework in Frameworks */,
+				770DD86A95ECA7AB30A09F4F /* QuartzCore.framework in Frameworks */,
+				066EC4A1BB3012F0BB40F890 /* Security.framework in Frameworks */,
+				D5678C0AB36E1585DCF057CC /* UIKit.framework in Frameworks */,
+				A72F704D4E5A8AA52373E571 /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A0EB30ED1C02BFE481399D4 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				24C0B48249165E49C2CE8691 /* adapters.rs */,
+				51B322FFFE03A64B14961A07 /* connection.rs */,
+				4EA4DB891088AA09D4BF46F0 /* device.rs */,
+				2D4C29318615E8A5D3FE7DC9 /* editing.rs */,
+				23579D27C8DC7514FE165302 /* journal.rs */,
+				C5277CF51DA528C81B33722A /* lib.rs */,
+				A355F398857288E597C8B339 /* library.rs */,
+				CDF996F59DBBFE136A06DAB4 /* listing.rs */,
+				66088D78A2D2B40B2E310DE3 /* main.rs */,
+				750EE9AF30E2ED49F1CF8BEF /* media.rs */,
+				CA9B73E0D556AC966E9BA9CE /* metadata.rs */,
+				56E6C8316FFB24762D0C2549 /* mobile.rs */,
+				7D7A23FD3623FAB3BD89CF9A /* network.rs */,
+				D29B01230323C789590EB38C /* protocol.rs */,
+				229B2D593FB287187798568A /* resume.rs */,
+				4CC204EB9C863B0A539D2165 /* settings.rs */,
+				33E2596512128371837A2D72 /* transfers.rs */,
+				3CF8EB0821A463846D51C508 /* vehicle.rs */,
+			);
+			name = src;
+			path = ../../src;
+			sourceTree = "<group>";
+		};
+		342BAEBA601C7C0BEDF261C7 /* galaxy-recorder */ = {
+			isa = PBXGroup;
+			children = (
+				483961A3FE76FC212313F77F /* main.mm */,
+				9A9F8BC4469C181A51E71EFC /* bindings */,
+			);
+			path = "galaxy-recorder";
+			sourceTree = "<group>";
+		};
+		34E331135867CFF8F78586D3 /* Externals */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Externals;
+			sourceTree = "<group>";
+		};
+		53ADDB88E238E4125078090F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D0A1004C26E390A9B2889021 /* AVFoundation.framework */,
+				BE98AAD609771014229CAF83 /* CoreGraphics.framework */,
+				5927BE525DFA32D7491B6246 /* CoreImage.framework */,
+				8ACA053FC385DCD6E94EB100 /* libapp.a */,
+				F85322AEA92AEC583316A8F9 /* MediaPlayer.framework */,
+				BFC73AB04D16C65FE68B2D91 /* Metal.framework */,
+				17F86DB563F97BCE8F1FE0CB /* MetalKit.framework */,
+				E2827B0BE98E99E882A2B53C /* Photos.framework */,
+				6D66B2713C7566751F7B8450 /* QuartzCore.framework */,
+				5AE748AE223262279C6D2ADE /* Security.framework */,
+				ABC144351F7C07C5A8E93876 /* UIKit.framework */,
+				9046B82D2B3717ECD64BDBEB /* WebKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		74994BC26340DCA7E8DFC6C0 = {
+			isa = PBXGroup;
+			children = (
+				208443C0C6B2064376C2620D /* assets */,
+				FE72C1B86CE1B7FB53ADB3C8 /* Assets.xcassets */,
+				48CF0D48ABDE96C6DD313BD6 /* LaunchScreen.storyboard */,
+				34E331135867CFF8F78586D3 /* Externals */,
+				CC968632B224C1A03B76E526 /* galaxy-recorder_iOS */,
+				96E226A6F2585226D4DE3011 /* Sources */,
+				0A0EB30ED1C02BFE481399D4 /* src */,
+				53ADDB88E238E4125078090F /* Frameworks */,
+				DF387F6854A8E32027A5E9DB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		96E226A6F2585226D4DE3011 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				342BAEBA601C7C0BEDF261C7 /* galaxy-recorder */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		9A9F8BC4469C181A51E71EFC /* bindings */ = {
+			isa = PBXGroup;
+			children = (
+				AAA9D2EA0A1303A61302640A /* bindings.h */,
+			);
+			path = bindings;
+			sourceTree = "<group>";
+		};
+		CC968632B224C1A03B76E526 /* galaxy-recorder_iOS */ = {
+			isa = PBXGroup;
+			children = (
+				E9A5EE00F5DFE25B3651E649 /* galaxy-recorder_iOS.entitlements */,
+				87E48B000C5E6FCAE6D82D23 /* Info.plist */,
+			);
+			path = "galaxy-recorder_iOS";
+			sourceTree = "<group>";
+		};
+		DF387F6854A8E32027A5E9DB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7B761B2D27B1F302BD8E93DC /* galaxy-recorder_iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		"TEMP_A56A19E7-EB67-4D6D-8FB9-A362A0FFD9B5" /* arm64 */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = arm64;
+			sourceTree = "<group>";
+		};
+		"TEMP_F0F06A66-0781-4343-8209-CCFD653E313D" /* x86_64 */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = x86_64;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AE5C56FF8D49941825692582 /* galaxy-recorder_iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C89AE9EA9B5720716DF2AC0 /* Build configuration list for PBXNativeTarget "galaxy-recorder_iOS" */;
+			buildPhases = (
+				080369527BFAB97C27B28A2C /* Build Rust Code */,
+				4472C704276B496D77342D73 /* Sources */,
+				A01D5ED6FD65CF55FF6BE588 /* Resources */,
+				B0CA9DA3F2F160919CF647AD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "galaxy-recorder_iOS";
+			packageProductDependencies = (
+			);
+			productName = "galaxy-recorder_iOS";
+			productReference = 7B761B2D27B1F302BD8E93DC /* galaxy-recorder_iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		76481DEBE33A2EE946326225 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 95C20D5D278CE04C523B248B /* Build configuration list for PBXProject "galaxy-recorder" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 74994BC26340DCA7E8DFC6C0;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DF387F6854A8E32027A5E9DB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AE5C56FF8D49941825692582 /* galaxy-recorder_iOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A01D5ED6FD65CF55FF6BE588 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF7CA44AD29367DE7482E9D2 /* Assets.xcassets in Resources */,
+				7C666B403A8B1EFDF0F35166 /* LaunchScreen.storyboard in Resources */,
+				1E6BDDBDA6136C1606A6FBCA /* assets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		080369527BFAB97C27B28A2C /* Build Rust Code */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Rust Code";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Externals/x86_64/${CONFIGURATION}/libapp.a",
+				"$(SRCROOT)/Externals/arm64/${CONFIGURATION}/libapp.a",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "npm run -- tauri ios xcode-script -v --platform \"${PLATFORM_DISPLAY_NAME:?}\" --sdk-root \"${SDKROOT:?}\" --framework-search-paths \"${FRAMEWORK_SEARCH_PATHS:?}\" --header-search-paths \"${HEADER_SEARCH_PATHS:?}\" --gcc-preprocessor-definitions \"${GCC_PREPROCESSOR_DEFINITIONS:-}\" --configuration \"${CONFIGURATION:?}\" ${FORCE_COLOR} ${ARCHS:?}\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4472C704276B496D77342D73 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				31322821946B8C2A2F28EC2A /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		975988E81602453352985081 /* release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = release;
+		};
+		A9BC421BAE4D4032FB19C305 /* release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					arm64,
+				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "galaxy-recorder_iOS/galaxy-recorder_iOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\".\"",
+				);
+				INFOPLIST_FILE = "galaxy-recorder_iOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=arm64]" = "$(inherited) $(PROJECT_DIR)/Externals/arm64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				"LIBRARY_SEARCH_PATHS[arch=x86_64]" = "$(inherited) $(PROJECT_DIR)/Externals/x86_64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.leishuo.galaxyrecorder;
+				PRODUCT_NAME = "吉行影记";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
+			};
+			name = release;
+		};
+		AA7B1AFC0FDFDBB1C86D6AA2 /* debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = debug;
+		};
+		EC3C1C3D95ECE2BE78082C24 /* debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					arm64,
+				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "galaxy-recorder_iOS/galaxy-recorder_iOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\".\"",
+				);
+				INFOPLIST_FILE = "galaxy-recorder_iOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=arm64]" = "$(inherited) $(PROJECT_DIR)/Externals/arm64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				"LIBRARY_SEARCH_PATHS[arch=x86_64]" = "$(inherited) $(PROJECT_DIR)/Externals/x86_64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.leishuo.galaxyrecorder;
+				PRODUCT_NAME = "吉行影记";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
+			};
+			name = debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2C89AE9EA9B5720716DF2AC0 /* Build configuration list for PBXNativeTarget "galaxy-recorder_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC3C1C3D95ECE2BE78082C24 /* debug */,
+				A9BC421BAE4D4032FB19C305 /* release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = debug;
+		};
+		95C20D5D278CE04C523B248B /* Build configuration list for PBXProject "galaxy-recorder" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA7B1AFC0FDFDBB1C86D6AA2 /* debug */,
+				975988E81602453352985081 /* release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 76481DEBE33A2EE946326225 /* Project object */;
+}

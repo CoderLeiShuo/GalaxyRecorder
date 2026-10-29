@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleDisplayName</key><string>吉行影记</string>
+  <key>NSLocalNetworkUsageDescription</key><string>通过车机 Wi-Fi 连接行车记录仪，读取和下载你的行车录像。</string>
+  <key>NSPhotoLibraryUsageDescription</key><string>读取本应用已保存的录像，支持离线回看、分享和删除。</string>
+  <key>NSPhotoLibraryAddUsageDescription</key><string>将行车录像和剪辑保存到系统相册。</string>
+  <key>NSAppTransportSecurity</key><dict>
+    <key>NSAllowsArbitraryLoads</key><true/>
+    <key>NSAllowsLocalNetworking</key><true/>
+  </dict>
+  <key>ITSAppUsesNonExemptEncryption</key><false/>
+</dict></plist>

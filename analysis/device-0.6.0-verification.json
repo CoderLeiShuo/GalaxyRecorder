@@ -1,0 +1,19 @@
+{
+  "version": "0.6.0",
+  "versionCode": 6000,
+  "installedVia": "adb install -r",
+  "installed": true,
+  "launch": {
+    "activity": "com.leishuo.galaxyrecorder/.MainActivity",
+    "state": "COLD",
+    "status": "ok",
+    "totalTimeMs": 113
+  },
+  "nativePlayerRuntimeVerified": false,
+  "vehicleVerified": false,
+  "notes": [
+    "覆盖安装保留既有数据，未卸载应用或删除录像。",
+    "后续检查发现手机切到其他应用，仅检查窗口归属；未继续切换前台或读取其他应用内容。",
+    "原生控件、亮度恢复和手势仍需用户在手机上实际确认。"
+  ]
+}

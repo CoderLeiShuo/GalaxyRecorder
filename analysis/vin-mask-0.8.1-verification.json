@@ -1,0 +1,30 @@
+{
+  "actualH264Export": true,
+  "androidGpuRuntimeVerified": false,
+  "region": {
+    "x": 0.62,
+    "y": 0,
+    "width": 0.38,
+    "height": 0.09
+  },
+  "checks": [
+    {
+      "time": 0,
+      "maskedPeakRgb": 1,
+      "rightmostColumnCovered": true,
+      "otherPicturePreserved": true
+    },
+    {
+      "time": 0.9,
+      "maskedPeakRgb": 1,
+      "rightmostColumnCovered": true,
+      "otherPicturePreserved": true
+    },
+    {
+      "time": 1.8,
+      "maskedPeakRgb": 1,
+      "rightmostColumnCovered": true,
+      "otherPicturePreserved": true
+    }
+  ]
+}

@@ -5,5 +5,12 @@ src-tauri/target/
 src-tauri/gen/android/.gradle/
 src-tauri/gen/android/**/build/
 src-tauri/gen/android/local.properties
+src-tauri/gen/apple/build/
+src-tauri/gen/apple/Externals/**/*.a
+src-tauri/gen/apple/**/xcuserdata/
+src-tauri/gen/apple/assets/
 *.log
 *.tsbuildinfo
+.DS_Store
+/output/*.apk
+/output/*.ipa

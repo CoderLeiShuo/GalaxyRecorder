@@ -1,0 +1,33 @@
+{
+  "ProductName": "吉行影记",
+  "File": "jixing-yingji-0.8.0-ui-lite-arm64-test.apk",
+  "PreviousBytes": 19884384,
+  "Bytes": 12833784,
+  "ReductionPercent": 35.46,
+  "ArchiveBreakdown": {
+    "Other": {
+      "Bytes": 103808,
+      "CompressedBytes": 32274
+    },
+    "Dex": {
+      "Bytes": 3004856,
+      "CompressedBytes": 1532869
+    },
+    "Native": {
+      "Bytes": 10298728,
+      "CompressedBytes": 10298728
+    },
+    "AndroidResources": {
+      "Bytes": 1127131,
+      "CompressedBytes": 871937
+    }
+  },
+  "ElfLoadAlignment": [
+    16384,
+    16384,
+    16384,
+    16384
+  ],
+  "NativeLibraryCompressed": false,
+  "LosslessImagePixelDifference": 0
+}

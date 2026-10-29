@@ -1,0 +1,23 @@
+{
+  "mockedRecorder": true,
+  "checks": [
+    "first launch automatically connects once",
+    "returning to app keeps valid connection while checking without rediscovery",
+    "reopening restores verified session without rediscovery",
+    "ignores delayed loss for an old network",
+    "loss clears connection and ignores stale successful checks",
+    "short horizontal and cancelled drags do not reconnect",
+    "pulling the device picture reconnects without opening its image editor",
+    "simple connection UI and QR connects hotspot then recorder automatically",
+    "pause resume view and delete actions stay in one row at 320 360 390 414 and desktop widths",
+    "long error messages do not push transfer buttons onto separate lines",
+    "failed task deletion retains other jobs and saved files",
+    "paused task resume and delete actions remain aligned",
+    "pause and resume preserve displayed byte progress",
+    "individual task deletion keeps saved recordings",
+    "pull on a healthy connection does not probe or rediscover",
+    "obsolete reconnect caption and button are absent",
+    "loss during discovery rejects late success"
+  ],
+  "errors": []
+}

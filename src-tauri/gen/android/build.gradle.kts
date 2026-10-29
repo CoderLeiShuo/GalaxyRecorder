@@ -11,8 +11,14 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
+        // Optional Google Maven mirror for networks that cannot reach dl.google.com.
+        if (providers.environmentVariable("GALAXY_MAVEN_MIRROR").orNull == "1") {
+            maven("https://maven.aliyun.com/repository/google") {
+                content { includeGroupByRegex("androidx\\..*") }
+            }
+        }
         mavenCentral()
+        google()
     }
 }
 
